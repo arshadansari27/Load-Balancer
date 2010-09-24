@@ -1,0 +1,2 @@
+This is default JUnit Test case.
+

@@ -1,0 +1,112 @@
+<?xml version="1.0" ?>
+<project name="loadbalancer-java-sockets" default="package">
+
+
+	<property file="build.properties" />
+
+	<path id="compile.classpath">
+		<fileset dir="${lib.dir}" includes="*.jar" />
+	</path>
+
+	<path id="test.classpath">
+		<path refid="compile.classpath" />
+		<pathelement location="${lib-test.dir}/junit-4.8.2.jar" />
+		<pathelement path="${build.dir}/test-classes" />
+	</path>
+
+	<target name="display-properties">
+		<echo>Debug = ${javac.debug}</echo>
+
+		<echo>Build directory (build.dir) = ${build.dir}</echo>
+		<echo>Distribution directory (dist.dir) = ${dist.dir}</echo>
+	</target>
+
+	<target name="clean" description="Deletes generated directories" depends="display-properties">
+		<echo>Cleaning output and report directories...</echo>
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+		<delete dir="${reports.dir}" />
+		<delete dir="${reports.data.dir}" />
+		<delete dir="${reports.html.dir}" />
+	</target>
+
+	<target name="init" depends="clean">
+		<echo>Making output and report directories...</echo>
+		<mkdir dir="${build.dir}/classes" />
+		<mkdir dir="${build.dir}/test-classes" />
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${reports.dir}" />
+		<mkdir dir="${reports.data.dir}" />
+		<mkdir dir="${reports.html.dir}" />
+	</target>
+
+	<target name="compile" depends="init" description="Compile Java code">
+		<javac srcdir="${src.dir}" destdir="${build.dir}/classes" classpathref="compile.classpath" debug="${javac.debug}" />
+	</target>
+
+	<target name="compile-tests" depends="compile" description="Compile Java code">
+		<javac srcdir="${test.dir}" destdir="${build.dir}/test-classes" classpathref="test.classpath" debug="${javac.debug}" />
+	</target>
+
+	<target name="test" depends="compile-tests" description="Run unit tests">
+		<junit printsummary="true" haltonfailure="false" failureproperty="test.failures">
+			<classpath refid="test.classpath" />
+			<formatter type="plain" />
+			<formatter type="xml" />
+			<batchtest todir="${reports.data.dir}">
+				<fileset dir="${test.classes.dir}" includes="**/*Test.class" />
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="test.report" depends="test" description="Generate HTML unit 
+	     test reports">
+		<junitreport todir="${reports.data.dir}">
+			<fileset dir="${reports.data.dir}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${reports.html.dir}" />
+		</junitreport>
+		<fail if="test.failures" message="There were test failures." />
+	</target>
+
+	<target name="package" depends="test.report" description="Generate JAR file">
+		<echo>Cleaning jar file with following manifest data:</echo>
+		<echo>jar name: ${project.name}-${project.version}.jar </echo>
+		<tstamp>
+			<format property="build.date" pattern="EEEE, d MMMM yyyy" />
+			<format property="build.time" pattern="hh:mm a" />
+		</tstamp>
+		<jar destfile="${dist.dir}/${project.name}-${project.version}.jar" basedir="${build.dir}/classes">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Specification-Title" value="${project.name}" />
+				<attribute name="Specification-Version" value="${project.version}" />
+				<attribute name="Specification-Vendor" value="Olive Labs Inc." />
+				<attribute name="Implementation-Title" value="common" />
+				<attribute name="Implementation-Version" value="${project.version}
+           - built at ${build.time} on ${build.date} " />
+				<attribute name="Implementation-Vendor" value="Olive Labs Inc." />
+			</manifest>
+		</jar>
+	</target>
+	<target name="clean-doc">
+		<echo>Cleaning docs</echo>
+		<delete dir="${build.dir}" />
+	</target>
+	<target name="javadoc" depends="clean-doc,compile,init" description="Generate JavaDocs.">
+		<echo>Creating docs</echo>
+		<javadoc sourcepath="${src.dir}" destdir="${javadoc.dir}" author="true" version="true" use="true" access="private" linksource="true" windowtitle="${project.title} API">
+			<classpath>
+				<path refid="compile.classpath" />
+				<pathelement path="${build.classes.dir}" />
+			</classpath>
+			<doctitle>
+				<![CDATA[<h1>${project.title}</h1>]]></doctitle>
+		<bottom>
+			<![CDATA[<i>Copyright &#169;Olive Labs Inc. 2010 All Rights Reserved.
+            </i>]]></bottom>
+</javadoc>
+</target>
+
+</project>
