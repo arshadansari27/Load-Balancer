@@ -33,6 +33,7 @@ public class DynamicMetricAlgorithmTest {
 		
 		
 		for(int i=0;i<20;i++){
+			if (nodes.isEmpty() )break;
 			node = algorithm.getNodeByAlgorithm(nodes);
 			nodes.removeNode(node);
 			System.out.println(node.getId()+".."+node.getPort()+"..."+node.getMetric().getMetrics());
