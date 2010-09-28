@@ -11,7 +11,6 @@ import org.xlightweb.IHttpSocketTimeoutHandler;
 import org.xlightweb.InvokeOn;
 import org.xsocket.Execution;
 
-import com.olivelabs.loadbalancer.server.ResponseHandler;
 
 
 public class HttpResponseHandler implements IHttpResponseHandler, IHttpSocketTimeoutHandler{
