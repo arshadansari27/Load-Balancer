@@ -26,7 +26,8 @@ public class HttpRequestHandler implements  IHttpRequestHandler, ILifeCycle{
 	      port = targetPort;
 	   }
 	   
-	   public void onInit() {
+	@SuppressWarnings("deprecation")
+	public void onInit() {
 	      httpClient = new HttpClient();
 	      httpClient.setAutoHandleCookies(false);  // cookie auto handling has to be deactivated!
 	      httpClient.setFollowsRedirect(false);
