@@ -6,6 +6,7 @@
 
 	<path id="compile.classpath">
 		<fileset dir="${lib.dir}" includes="*.jar" />
+		<fileset dir="${res.dir}" includes="*.*" />
 	</path>
 
 	<path id="test.classpath">
@@ -43,10 +44,16 @@
 
 	<target name="compile" depends="init" description="Compile Java code">
 		<javac srcdir="${src.dir}" destdir="${build.dir}/classes" classpathref="compile.classpath" debug="${javac.debug}" />
+		<copy todir="${build.dir}/classes">
+			<fileset dir="${res.dir}" includes="*.*" />
+		</copy>
 	</target>
 
 	<target name="compile-tests" depends="compile" description="Compile Java code">
 		<javac srcdir="${test.dir}" destdir="${build.dir}/test-classes" classpathref="test.classpath" debug="${javac.debug}" />
+		<copy todir="${build.dir}/test-classes">
+					<fileset dir="${res.dir}" includes="*.*" />
+				</copy>
 	</target>
 
 	<target name="test" depends="compile-tests" description="Run unit tests">

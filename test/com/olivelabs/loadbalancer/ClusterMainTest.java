@@ -1,5 +1,7 @@
 package com.olivelabs.loadbalancer;
 
+import org.junit.Ignore;
+import org.junit.Test;
 import org.xlightweb.RequestHandlerChain;
 import org.xlightweb.server.HttpServer;
 
@@ -10,7 +12,10 @@ import com.olivelabs.loadbalancer.server.HttpRequestHandler;
 import com.olivelabs.routing.RoutingAlgorithm;
 
 public class ClusterMainTest {
-	public static void main(String[] args) {
+	
+	@Ignore
+	@Test
+	public void test2Servers() {
 		System.setProperty("org.xlightweb.showDetailedError", "true");
 
 		

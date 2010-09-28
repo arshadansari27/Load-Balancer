@@ -25,7 +25,7 @@ public class HttpBalancer implements IBalancer {
 
 	public void setAlgorithmName(String algorithmName) throws Exception {
 		this.algorithmName = algorithmName;
-		if(!(this.algorithmName == RoutingAlgorithm.DYNAMIC || this.algorithmName==RoutingAlgorithm.ROUND_ROBIN))
+		if(!(RoutingAlgorithm.DYNAMIC.equals(this.algorithmName) || RoutingAlgorithm.ROUND_ROBIN.equals(this.algorithmName)))
 			throw new Exception("Please set Routing Algorithm name property!!");
 		setRoutingAlgorithm(RoutingAlgorithm.getRoutingAlgorithm(algorithmName));
 	}
