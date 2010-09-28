@@ -12,6 +12,7 @@
 		<path refid="compile.classpath" />
 		<pathelement location="${lib-test.dir}/junit-4.8.2.jar" />
 		<pathelement path="${build.dir}/test-classes" />
+		<pathelement path="${build.dir}/classes" />
 	</path>
 
 	<target name="display-properties">
