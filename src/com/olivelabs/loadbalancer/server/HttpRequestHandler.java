@@ -19,48 +19,49 @@ import com.olivelabs.data.Node;
 import com.olivelabs.loadbalancer.IBalancer;
 import com.olivelabs.routing.RoutingAlgorithm;
 
-
-public class HttpRequestHandler implements  IHttpRequestHandler, ILifeCycle{
+public class HttpRequestHandler implements IHttpRequestHandler, ILifeCycle {
 	private IBalancer balancer;
-	private HttpClient httpClient = null;  
-	   
+	private HttpClient httpClient = null;
 
-	   public HttpRequestHandler(IBalancer bal) {
-	   }
-	   
+	public HttpRequestHandler(IBalancer bal) {
+		balancer = bal;
+	}
+
 	@SuppressWarnings("deprecation")
 	public void onInit() {
-	      httpClient = new HttpClient();
-	      httpClient.setAutoHandleCookies(false);  // cookie auto handling has to be deactivated!
-	      httpClient.setFollowsRedirect(false);
-	      httpClient.setAutoUncompress(false);
-	   }
-	   
-	   public void onDestroy() throws IOException {
-	      httpClient.close();
-	   }
+		httpClient = new HttpClient();
+		httpClient.setAutoHandleCookies(false); // cookie auto handling has to
+												// be deactivated!
+		httpClient.setFollowsRedirect(false);
+		httpClient.setAutoUncompress(false);
+	}
 
-	   @Execution(Execution.MULTITHREADED)
-	   public void onRequest(IHttpExchange exchange) throws IOException, BadMessageException {
+	public void onDestroy() throws IOException {
+		httpClient.close();
+	}
 
-	      IHttpRequest req = exchange.getRequest();
+	@Execution(Execution.MULTITHREADED)
+	public void onRequest(IHttpExchange exchange) throws IOException,
+			BadMessageException {
 
-	      // reset address (Host header will be update automatically)
-	      Node node;
-	      try {
+		IHttpRequest req = exchange.getRequest();
+
+		// reset address (Host header will be update automatically)
+		Node node;
+		try {
 			node = balancer.getNode();
-		
-	    	  URL url = req.getRequestUrl();
-		      req.setRequestUrl(new URL(url.getProtocol(), node.getHost(), node.getPort().intValue(), url.getFile()));
 
-	         httpClient.send(req, new HttpResponseHandler(exchange));
-	      } catch (ConnectException ce) {
-	         exchange.sendError(502, ce.getMessage());
-	      }
-	      catch (Exception e) {
-				e.printStackTrace();
-				 exchange.sendError(500, e.getMessage());
-			}
-		    
-	   }
+			URL url = req.getRequestUrl();
+			req.setRequestUrl(new URL(url.getProtocol(), node.getHost(), node
+					.getPort().intValue(), url.getFile()));
+
+			httpClient.send(req, new HttpResponseHandler(exchange));
+		} catch (ConnectException ce) {
+			exchange.sendError(502, ce.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			exchange.sendError(500, e.getMessage());
+		}
+
+	}
 }

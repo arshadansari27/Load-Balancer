@@ -4,10 +4,12 @@ package com.olivelabs.run;
 import org.xlightweb.RequestHandlerChain;
 import org.xlightweb.server.HttpServer;
 
+import com.olivelabs.data.Metric;
 import com.olivelabs.loadbalancer.IBalancer;
 import com.olivelabs.loadbalancer.implementation.HttpBalancer;
 import com.olivelabs.loadbalancer.logging.LogRequestHandler;
 import com.olivelabs.loadbalancer.server.HttpRequestHandler;
+import com.olivelabs.routing.RoutingAlgorithm;
 public class MainClass {
 
 	/**
@@ -21,8 +23,12 @@ public class MainClass {
 			int listenport = 8000;
 			RequestHandlerChain chain = new RequestHandlerChain();
 			IBalancer balancer = new HttpBalancer();
+			balancer.setAlgorithmName(RoutingAlgorithm.ROUND_ROBIN);
+			balancer.setMetricType(Metric.STRATEGY_REQUEST_SIZE);
+			balancer.addNode("localhost","80");
+			balancer.addNode("localhost","8090");
+			
 			HttpRequestHandler requestHandler = new HttpRequestHandler(balancer);
-			chain.addLast(new LogRequestHandler());
 			chain.addLast(requestHandler);
 
 			HttpServer proxy =  new HttpServer(listenport, chain);
