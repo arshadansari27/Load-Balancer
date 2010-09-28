@@ -15,15 +15,17 @@ import org.xlightweb.server.HttpServer;
 import org.xsocket.Execution;
 import org.xsocket.ILifeCycle;
 
+import com.olivelabs.data.Node;
+import com.olivelabs.loadbalancer.IBalancer;
+import com.olivelabs.routing.RoutingAlgorithm;
+
 
 public class HttpRequestHandler implements  IHttpRequestHandler, ILifeCycle{
+	private IBalancer balancer;
 	private HttpClient httpClient = null;  
-	   private String host = null;
-	   private int port = -1;
+	   
 
-	   public HttpRequestHandler(String targetHost, int targetPort) {
-	      host = targetHost;
-	      port = targetPort;
+	   public HttpRequestHandler(IBalancer bal) {
 	   }
 	   
 	@SuppressWarnings("deprecation")
@@ -44,18 +46,21 @@ public class HttpRequestHandler implements  IHttpRequestHandler, ILifeCycle{
 	      IHttpRequest req = exchange.getRequest();
 
 	      // reset address (Host header will be update automatically)
-	      URL url = req.getRequestUrl();
-	      req.setRequestUrl(new URL(url.getProtocol(), host, port, url.getFile()));
-
-	      // perform further proxy issues (via header, cache, remove hop-by-hop headers, ...)
-	      // ...
-
-
-	      // .. and forward the request
+	      Node node;
 	      try {
+			node = balancer.getNode();
+		
+	    	  URL url = req.getRequestUrl();
+		      req.setRequestUrl(new URL(url.getProtocol(), node.getHost(), node.getPort().intValue(), url.getFile()));
+
 	         httpClient.send(req, new HttpResponseHandler(exchange));
 	      } catch (ConnectException ce) {
 	         exchange.sendError(502, ce.getMessage());
 	      }
+	      catch (Exception e) {
+				e.printStackTrace();
+				 exchange.sendError(500, e.getMessage());
+			}
+		    
 	   }
 }

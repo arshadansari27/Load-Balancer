@@ -4,6 +4,8 @@ package com.olivelabs.run;
 import org.xlightweb.RequestHandlerChain;
 import org.xlightweb.server.HttpServer;
 
+import com.olivelabs.loadbalancer.IBalancer;
+import com.olivelabs.loadbalancer.implementation.HttpBalancer;
 import com.olivelabs.loadbalancer.logging.LogRequestHandler;
 import com.olivelabs.loadbalancer.server.HttpRequestHandler;
 public class MainClass {
@@ -18,7 +20,8 @@ public class MainClass {
 		try {
 			int listenport = 8000;
 			RequestHandlerChain chain = new RequestHandlerChain();
-			HttpRequestHandler requestHandler = new HttpRequestHandler("www.google.com",80);
+			IBalancer balancer = new HttpBalancer();
+			HttpRequestHandler requestHandler = new HttpRequestHandler(balancer);
 			chain.addLast(new LogRequestHandler());
 			chain.addLast(requestHandler);
 

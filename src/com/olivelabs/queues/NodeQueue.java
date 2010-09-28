@@ -16,8 +16,8 @@ public class NodeQueue {
 	public void addNode(Node node) {
 		this.nodes.add(node);
 	}
-	public void removeNode(Node node){
-		this.nodes.remove(node);
+	public boolean removeNode(Node node){
+		return this.nodes.remove(node);
 	}
 	public Node getNode(int index){
 		return nodes.get(index);
