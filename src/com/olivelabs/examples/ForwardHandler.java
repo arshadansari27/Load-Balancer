@@ -56,29 +56,5 @@ public class ForwardHandler implements IHttpRequestHandler, ILifeCycle{
 	         exchange.sendError(502, ce.getMessage());
 	      }
 	   }
-	   public static void main(String args[]){
-		   System.setProperty("org.xlightweb.showDetailedError", "true");
-
-		
-		try {
-			int listenport = 8000;
-			RequestHandlerChain chain = new RequestHandlerChain();
-			chain.addLast(new LogFilter());
-			chain.addLast(new ForwardHandler("www.google.com",80));
-
-			HttpServer proxy = new HttpServer(listenport, chain);
-			proxy.setAutoCompressThresholdBytes(Integer.MAX_VALUE);
-			proxy.setAutoUncompress(false);
-
-			proxy.run();
-			
-
-			//proxy.start();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		   
-		   
-	   }
+	  
 }
