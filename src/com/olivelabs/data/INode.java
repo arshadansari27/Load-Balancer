@@ -7,4 +7,5 @@ public interface INode {
 	public Metric getMetric();
 	public void setMetric(Metric metric);
 	public Integer getId();
+	public void setMetricValue(Object value);
 }

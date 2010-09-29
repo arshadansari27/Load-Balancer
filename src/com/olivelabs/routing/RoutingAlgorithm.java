@@ -10,7 +10,9 @@ public abstract class RoutingAlgorithm {
 	public static final String ROUND_ROBIN = "com.olivelabs.routing.implementation.RoundRobinAlgorithm";
 	public static final String DYNAMIC = "com.olivelabs.routing.implementation.DynamicMetricAlgorithm";
 	
-	public static RoutingAlgorithm getRoutingAlgorithm(String algorithm) throws Exception{
+	protected static NodeQueue nodeQueue;
+	public static RoutingAlgorithm getRoutingAlgorithm(String algorithm, NodeQueue queue) throws Exception{
+		nodeQueue =  queue;
 		if(ROUND_ROBIN.equals(algorithm)){
 			return (RoutingAlgorithm) Class.forName(ROUND_ROBIN).newInstance();
 		}
@@ -21,5 +23,5 @@ public abstract class RoutingAlgorithm {
 			throw new Exception("Routing Strategy not defined!!!");
 	}
 	
-	public abstract INode getNodeByAlgorithm(NodeQueue queue);
+	public abstract INode getNodeByAlgorithm();
 }

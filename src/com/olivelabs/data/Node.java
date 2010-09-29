@@ -33,4 +33,8 @@ public class Node implements INode {
 		
 		return this.id;
 	}
+	@Override
+	public void setMetricValue(Object value) {
+		metric.setMetrics(value);
+	}
 }

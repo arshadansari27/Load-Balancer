@@ -49,7 +49,7 @@ public class MainClass {
 			System.out.println("Metric Strategy : "+metricStrategy);
 			balancer.setMetricType(metricStrategy);
 			balancer.addNode("localhost","80");
-			balancer.addNode("localhost","8090");
+			//balancer.addNode("localhost","8090");
 			
 			HttpRequestHandler requestHandler = new HttpRequestHandler(balancer);
 			chain.addLast(requestHandler);

@@ -23,7 +23,7 @@ public class HttpBalancerTest {
 		balancer.setAlgorithmName(RoutingAlgorithm.DYNAMIC);
 		balancer.setMetricType(Metric.STRATEGY_REQUEST_SIZE);
 		for(int i=0;i<10;i++){
-			balancer.addNode("Localhost","909"+i);
+			balancer.addNode("localhost","909"+i);
 		}
 	}
 
@@ -36,7 +36,24 @@ public class HttpBalancerTest {
 	}
 
 	@Test
-	public void testGetNode() {
+	public void testGetNodeDynamically() throws Exception {
+		balancer.setAlgorithmName(RoutingAlgorithm.DYNAMIC);
+
+		for(int i=0;i<10000;i++){
+			if(balancer.isNodeQueueEmpty())
+				break;
+			INode node = balancer.getNode();
+			Assert.assertNotNull(node);
+			System.out.println(node.getId());
+		}
+		
+		
+	}
+
+	@Test
+	public void testGetNodeToundRobin() throws Exception {
+		balancer.setAlgorithmName(RoutingAlgorithm.ROUND_ROBIN);
+		
 		for(int i=0;i<10000;i++){
 			if(balancer.isNodeQueueEmpty())
 				break;

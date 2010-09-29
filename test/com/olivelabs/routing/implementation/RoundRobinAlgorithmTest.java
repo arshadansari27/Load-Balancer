@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import java.util.Random;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.olivelabs.data.INode;
@@ -20,24 +19,27 @@ public class RoundRobinAlgorithmTest {
 	NodeQueue nodes;
 	INode node;
 	RoutingAlgorithm algorithm;
+	int nodeSize = 20;
+	int requestCount = 300000;
 	
 	@Test
 	public void testGetNodeByAlgorithmWithOutMetrics() throws Exception{
 		nodes = new NodeQueue();
 		Random r = new Random();
-		for(int i=0;i<10;i++){
+		for(int i=0;i<nodeSize;i++){
 			node = new Node("Localhost","909"+i,Metric.getMetric(Metric.STRATEGY_REQUEST_SIZE));
 			int value = r.nextInt(1000);
 			//node.getMetric().setMetrics(new Long(value));
 			nodes.addNode(node);
+			Assert.assertTrue(nodes.hasNode(node));
 		}
-		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.ROUND_ROBIN);
+		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.ROUND_ROBIN,nodes);
 		Assert.assertNotNull(algorithm);
 		
-		for(int i=0;i<20;i++){
+		for(int i=0;i<requestCount;i++){
 			if (nodes.isEmpty() )break;
-			node = algorithm.getNodeByAlgorithm(nodes);
-			nodes.removeNode(node);			
+			node = algorithm.getNodeByAlgorithm();
+			Assert.assertNotNull(node);
 		}
 	}
 	
@@ -46,20 +48,20 @@ public class RoundRobinAlgorithmTest {
 	public void testGetNodeByAlgorithmWithMetrics()  throws Exception{
 		nodes = new NodeQueue();
 		Random r = new Random();
-		for(int i=0;i<10;i++){
+		for(int i=0;i<nodeSize;i++){
 			node = new Node("Localhost","909"+i,Metric.getMetric(Metric.STRATEGY_REQUEST_SIZE));
 			int value = r.nextInt(1000);
 			node.getMetric().setMetrics(Integer.valueOf(value));
 			nodes.addNode(node);
+			Assert.assertTrue(nodes.hasNode(node));
 		}
-		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.ROUND_ROBIN);
+		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.ROUND_ROBIN,nodes);
 		Assert.assertNotNull(algorithm);
 		
-		for(int i=0;i<20;i++){
+		for(int i=0;i<requestCount;i++){
 			if (nodes.isEmpty() )break;
-			node = algorithm.getNodeByAlgorithm(nodes);
-			nodes.removeNode(node);
-			
+			node = algorithm.getNodeByAlgorithm();
+			Assert.assertNotNull(node);
 		}
 	
 	}
@@ -69,13 +71,13 @@ public class RoundRobinAlgorithmTest {
 	public void testGetNodeByAlgorithmWithOutNodes() throws Exception{
 		nodes = new NodeQueue();
 		
-		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.ROUND_ROBIN);
+		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.ROUND_ROBIN,nodes);
 		Assert.assertNotNull(algorithm);
 		
-		for(int i=0;i<20;i++){
+		for(int i=0;i<requestCount;i++){
 			if (nodes.isEmpty() )break;
-			node = algorithm.getNodeByAlgorithm(nodes);
-			nodes.removeNode(node);		
+			node = algorithm.getNodeByAlgorithm();
+			Assert.assertNotNull(node);
 		}
 	}
 

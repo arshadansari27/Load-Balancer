@@ -28,7 +28,7 @@ public class HttpBalancer implements IBalancer {
 		this.algorithmName = algorithmName;
 		if(!(RoutingAlgorithm.DYNAMIC.equals(this.algorithmName) || RoutingAlgorithm.ROUND_ROBIN.equals(this.algorithmName)))
 			throw new Exception("Please set Routing Algorithm name property!!");
-		setRoutingAlgorithm(RoutingAlgorithm.getRoutingAlgorithm(algorithmName));
+		setRoutingAlgorithm(RoutingAlgorithm.getRoutingAlgorithm(algorithmName,queue));
 	}
 
 	public RoutingAlgorithm getRoutingAlgorithm() {
@@ -53,7 +53,7 @@ public class HttpBalancer implements IBalancer {
 		if(this.routingAlgorithm == null){
 			throw new RuntimeException("Please set the routing algorithm property");
 		}
-		INode node = routingAlgorithm.getNodeByAlgorithm(queue);
+		INode node = routingAlgorithm.getNodeByAlgorithm();
 		return node;
 	}
 	
