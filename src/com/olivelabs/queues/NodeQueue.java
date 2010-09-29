@@ -3,43 +3,44 @@ package com.olivelabs.queues;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.olivelabs.data.INode;
 import com.olivelabs.data.Node;
 import com.olivelabs.routing.RoutingAlgorithm;
 
 public class NodeQueue {
 
-	ArrayList<Node> nodes;
+	ArrayList<INode> nodes;
 	
 	public NodeQueue(){
-		this.nodes = new ArrayList<Node>();
+		this.nodes = new ArrayList<INode>();
 	}
-	public void addNode(Node node) {
+	public void addNode(INode node) {
 		this.nodes.add(node);
 	}
-	public boolean removeNode(Node node){
+	public boolean removeNode(INode node){
 		return this.nodes.remove(node);
 	}
-	public Node getNode(int index){
+	public INode getNode(int index){
 		return nodes.get(index);
 	}
-	public void addNodes(ArrayList<Node> nodes){
+	public void addNodes(ArrayList<INode> nodes){
 		this.nodes.addAll(nodes);
 	}
-	public boolean removeNodes(ArrayList<Node> nodes){
+	public boolean removeNodes(ArrayList<INode> nodes){
 		return this.nodes.removeAll(nodes);
 	}
 	
-	public Node getNodeById(Integer id){
-		for(Node node : nodes){
-			if(node.getId()==id) return node;
+	public INode getNodeById(Integer id){
+		for(INode node : nodes){
+			if(node.getId().equals(id)) return node;
 		}
 		return null;
 	}
 	
-	public List<Node> getAll(){
+	public List<INode> getAll(){
 		return nodes;
 	}
-	public boolean hasNode(Node node){
+	public boolean hasNode(INode node){
 		return nodes.contains(node);
 	}
 	public boolean isEmpty() {
@@ -48,7 +49,7 @@ public class NodeQueue {
 	public int getSize() {
 		return nodes.size();
 	}
-	public void addNode(Node node, int index) {
+	public void addNode(INode node, int index) {
 		nodes.add(index, node);
 		
 	}

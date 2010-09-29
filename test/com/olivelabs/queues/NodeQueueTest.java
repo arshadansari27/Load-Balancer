@@ -6,13 +6,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.olivelabs.data.INode;
 import com.olivelabs.data.Metric;
 import com.olivelabs.data.Node;
 
 public class NodeQueueTest {
 
 	NodeQueue nodes;
-	Node node;
+	INode node;
 	@Before
 	public void setUp() throws Exception{
 		nodes = new NodeQueue();
@@ -28,10 +29,10 @@ public class NodeQueueTest {
 	
 	@Test
 	public void testAddNode() throws Exception{
-		Node node1 = new Node("WTF","2342",Metric.getMetric(Metric.STRATEGY_REQUEST_SIZE));
+		INode node1 = new Node("WTF","2342",Metric.getMetric(Metric.STRATEGY_REQUEST_SIZE));
 		Integer id = node1.getId();
 		nodes.addNode(node1);
-		Node node2 = nodes.getNodeById(id);
+		INode node2 = nodes.getNodeById(id);
 		Assert.assertEquals(node1, node2);
 		
 	}
@@ -44,14 +45,10 @@ public class NodeQueueTest {
 
 	@Test
 	public void testGetNode() {
-		Node node = nodes.getNode(0);
+		INode node = nodes.getNode(0);
 		Assert.assertNotNull(node);
 		
 	}
 
-	@Test
-	public void testGetNodeByMetric() throws Exception {
-		
-	}
 
 }

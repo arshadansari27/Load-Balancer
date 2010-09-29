@@ -7,11 +7,12 @@
 	<path id="compile.classpath">
 		<fileset dir="${lib.dir}" includes="*.jar" />
 		<fileset dir="${res.dir}" includes="*.*" />
+		<pathelement path="${build.dir}/classes" />
 	</path>
 
 	<path id="test.classpath">
 		<path refid="compile.classpath" />
-		<pathelement location="${lib-test.dir}/junit-4.8.2.jar" />
+		<fileset dir="${lib-test.dir}" includes="*.jar" />
 		<pathelement path="${build.dir}/test-classes" />
 		<pathelement path="${build.dir}/classes" />
 	</path>
@@ -85,6 +86,25 @@
 			<format property="build.date" pattern="EEEE, d MMMM yyyy" />
 			<format property="build.time" pattern="hh:mm a" />
 		</tstamp>
+		<pathconvert property="mf.classpath" pathsep=" ">
+		    <path refid="compile.classpath" />
+			
+		    <flattenmapper />
+		</pathconvert>
+		<copy todir="${build.dir}/classes">
+				    <fileset dir="${lib.dir}">
+				      <include name="*.jar"/>
+				      <include name="*.zip"/>
+				    </fileset>
+				  </copy>
+				  <!-- move this file before the 'jar' task (and put it in the 'classes' dir) if you'd rather 
+				       include it in the jar -->
+				<copy todir="${build.dir}/classes">
+						    <fileset dir="${res.dir}">
+						      <include name="*.properties"/>
+						      <include name="*.xml"/>
+						    </fileset>
+						  </copy>  
 		<jar destfile="${dist.dir}/${project.name}-${project.version}.jar" basedir="${build.dir}/classes">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}" />
@@ -95,8 +115,12 @@
 				<attribute name="Implementation-Version" value="${project.version}
            - built at ${build.time} on ${build.date} " />
 				<attribute name="Implementation-Vendor" value="Olive Labs Inc." />
+				 <attribute name="Class-Path" value="${mf.classpath}" />
+				<attribute name="Main-Class" value="${main.class}" />
 			</manifest>
 		</jar>
+		
+		<delete dir="${build.dir}/classes" />
 	</target>
 	<target name="clean-doc">
 		<echo>Cleaning docs</echo>

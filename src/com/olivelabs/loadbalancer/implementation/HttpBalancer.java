@@ -1,5 +1,6 @@
 package com.olivelabs.loadbalancer.implementation;
 
+import com.olivelabs.data.INode;
 import com.olivelabs.data.Metric;
 import com.olivelabs.data.Node;
 import com.olivelabs.data.metrics.MetricRequest;
@@ -48,19 +49,19 @@ public class HttpBalancer implements IBalancer {
 	}
 
 	@Override
-	public Node getNode() throws RuntimeException{
+	public INode getNode() throws RuntimeException{
 		if(this.routingAlgorithm == null){
 			throw new RuntimeException("Please set the routing algorithm property");
 		}
-		Node node = routingAlgorithm.getNodeByAlgorithm(queue);
+		INode node = routingAlgorithm.getNodeByAlgorithm(queue);
 		return node;
 	}
 	
-	public Node addNode(String host, String port) throws Exception{
+	public INode addNode(String host, String port) throws Exception{
 		if(!(Metric.STRATEGY_DYNAMIC.equals(metricType)|| Metric.STRATEGY_REQUEST_SIZE.equals(metricType)))
 			throw new RuntimeException("Please set the metric type property");
 		Metric metric = Metric.getMetric(metricType);
-		Node node = new Node(host,port, metric);
+		INode node = new Node(host,port, metric);
 		queue.addNode(node);
 		return node;
 		
@@ -72,18 +73,18 @@ public class HttpBalancer implements IBalancer {
 	}
 
 	@Override
-	public boolean isNodeUp(Node node) {
+	public boolean isNodeUp(INode node) {
 		return queue.hasNode(node);
 	}
 
 	@Override
-	public boolean removeNode(Node node) {
+	public boolean removeNode(INode node) {
 		return queue.removeNode(node);
 	}
 
 	@Override
 	public boolean removeNodeById(Long id) {
-		Node node = queue.getNodeById(id.intValue());
+		Node node = (Node) queue.getNodeById(id.intValue());
 		return queue.removeNode(node);
 	}
 

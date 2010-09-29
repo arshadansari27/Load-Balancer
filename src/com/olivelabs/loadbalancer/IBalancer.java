@@ -1,5 +1,6 @@
 package com.olivelabs.loadbalancer;
 
+import com.olivelabs.data.INode;
 import com.olivelabs.data.Node;
 import com.olivelabs.routing.RoutingAlgorithm;
 
@@ -7,14 +8,14 @@ public interface IBalancer {
 
 	
 	//Make sure that you update the metrics of Node before returning it
-	Node getNode() throws Exception;
-	Node addNode(String host, String port) throws Exception;
+	INode getNode() throws Exception;
+	INode addNode(String host, String port) throws Exception;
 	
-	boolean removeNode(Node node);
+	boolean removeNode(INode node);
 	
 	boolean removeNodeById(Long id);
 	
-	boolean isNodeUp(Node n);
+	boolean isNodeUp(INode n);
 	
 	boolean isNodeQueueEmpty();
 	

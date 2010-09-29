@@ -21,7 +21,7 @@ public abstract class Metric {
 		else
 			throw new Exception("Strategy not defined!!!");
 	}
-	public abstract Double getMetrics();
+	public abstract double getMetrics();
 	//Incase of MetricRequest : Set will add and incase of Dynamic: it will replace
 	public abstract void setMetrics(Object value);
 }

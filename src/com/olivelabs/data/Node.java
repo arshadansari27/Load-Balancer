@@ -1,6 +1,6 @@
 package com.olivelabs.data;
 
-public class Node {
+public class Node implements INode {
 	
 	private Integer id;
 	private String host;

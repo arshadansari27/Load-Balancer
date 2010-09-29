@@ -9,12 +9,14 @@ import org.xlightweb.BadMessageException;
 import org.xlightweb.IHttpExchange;
 import org.xlightweb.IHttpRequest;
 import org.xlightweb.IHttpRequestHandler;
+import org.xlightweb.IHttpResponseHandler;
 import org.xlightweb.RequestHandlerChain;
 import org.xlightweb.client.HttpClient;
 import org.xlightweb.server.HttpServer;
 import org.xsocket.Execution;
 import org.xsocket.ILifeCycle;
 
+import com.olivelabs.data.INode;
 import com.olivelabs.data.Node;
 import com.olivelabs.loadbalancer.IBalancer;
 import com.olivelabs.routing.RoutingAlgorithm;
@@ -44,18 +46,18 @@ public class HttpRequestHandler implements IHttpRequestHandler, ILifeCycle {
 	public void onRequest(IHttpExchange exchange) throws IOException,
 			BadMessageException {
 
-		IHttpRequest req = exchange.getRequest();
-
-		// reset address (Host header will be update automatically)
-		Node node;
+		
 		try {
+			IHttpRequest request = exchange.getRequest();
+			INode node;
 			node = balancer.getNode();
+			
 
-			URL url = req.getRequestUrl();
-			req.setRequestUrl(new URL(url.getProtocol(), node.getHost(), node
+			URL url = request.getRequestUrl();
+			request.setRequestUrl(new URL(url.getProtocol(), node.getHost(), node
 					.getPort().intValue(), url.getFile()));
-
-			httpClient.send(req, new HttpResponseHandler(exchange));
+			IHttpResponseHandler responseHandler = new HttpResponseHandler(exchange);
+			httpClient.send(request, responseHandler);
 		} catch (ConnectException ce) {
 			exchange.sendError(502, ce.getMessage());
 		} catch (Exception e) {

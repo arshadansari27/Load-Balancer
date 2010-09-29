@@ -1,5 +1,6 @@
 package com.olivelabs.routing;
 
+import com.olivelabs.data.INode;
 import com.olivelabs.data.Node;
 import com.olivelabs.queues.NodeQueue;
 import com.olivelabs.routing.implementation.DynamicMetricAlgorithm;
@@ -20,5 +21,5 @@ public abstract class RoutingAlgorithm {
 			throw new Exception("Routing Strategy not defined!!!");
 	}
 	
-	public abstract Node getNodeByAlgorithm(NodeQueue queue);
+	public abstract INode getNodeByAlgorithm(NodeQueue queue);
 }

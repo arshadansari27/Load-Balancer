@@ -14,8 +14,10 @@ public class MetricRequest extends Metric{
 		super();
 		numberOfRequestServed = 0L;
 	}
-	public Double getMetrics(){
-		return ((double)numberOfRequestServed/totalRequests) * 100.0;
+	public double getMetrics(){
+		double metrics = (((double)numberOfRequestServed * 1.0)/totalRequests) * 100.0;
+		if(Double.isNaN(metrics)) return 0.0;
+		return metrics; 
 	}
 	public void setMetrics(Object value){
 		Long temp;

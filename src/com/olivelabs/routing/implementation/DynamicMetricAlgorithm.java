@@ -1,5 +1,6 @@
 package com.olivelabs.routing.implementation;
 
+import com.olivelabs.data.INode;
 import com.olivelabs.data.Node;
 import com.olivelabs.queues.NodeQueue;
 import com.olivelabs.routing.RoutingAlgorithm;
@@ -7,20 +8,24 @@ import com.olivelabs.routing.RoutingAlgorithm;
 public class DynamicMetricAlgorithm extends RoutingAlgorithm {
 
 	@Override
-	public Node getNodeByAlgorithm(NodeQueue queue) {
+	public INode getNodeByAlgorithm(NodeQueue queue) {
 		if(queue.isEmpty()) return null;
-		Integer id=-1;
-		Double metric;
-		Double temp=10000000.00D;
-		for(Node n : queue.getAll()){
+		Integer id=null;
+		double metric;
+		double temp=10000000.00D;
+		for(INode n : queue.getAll()){
 			metric = n.getMetric().getMetrics();
 			if (metric < temp) {
 				temp = metric;
 				id = n.getId();
 			}
 		}
-		if(id == -1) throw new RuntimeException("Error occured!");
-		return queue.getNodeById(id);
+		if(id!= null) {
+			INode node = queue.getNodeById(id);
+			node.getMetric().setMetrics(Integer.valueOf(1));
+			return node;
+		}
+		else throw new RuntimeException("Dynamic Algorithm didn't get any node!");
 	}
 
 }

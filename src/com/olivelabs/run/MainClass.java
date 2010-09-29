@@ -8,12 +8,11 @@ import java.util.Properties;
 import org.xlightweb.RequestHandlerChain;
 import org.xlightweb.server.HttpServer;
 
-import com.olivelabs.data.Metric;
 import com.olivelabs.loadbalancer.IBalancer;
 import com.olivelabs.loadbalancer.implementation.HttpBalancer;
-import com.olivelabs.loadbalancer.logging.LogRequestHandler;
 import com.olivelabs.loadbalancer.server.HttpRequestHandler;
-import com.olivelabs.routing.RoutingAlgorithm;
+
+
 public class MainClass {
 
 	/**
@@ -33,7 +32,7 @@ public class MainClass {
 
 	        props.load(inputStream);
 			
-			
+			System.out.println("Loading the load balancer... \nplease wait");
 			
 			int lbPort = Integer.parseInt((String) props.get("lb.port"));
 			System.out.println("Port Selected ["+lbPort+"]");
@@ -61,7 +60,7 @@ public class MainClass {
 			
 			proxy.run();
 			
-
+			System.out.println("Load balancer is running!");
 			//proxy.start();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

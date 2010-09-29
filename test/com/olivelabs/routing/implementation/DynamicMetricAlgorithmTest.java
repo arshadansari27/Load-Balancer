@@ -1,9 +1,13 @@
 package com.olivelabs.routing.implementation;
 
+import java.util.Random;
+
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import com.olivelabs.data.INode;
 import com.olivelabs.data.Metric;
 import com.olivelabs.data.Node;
 import com.olivelabs.queues.NodeQueue;
@@ -13,32 +17,61 @@ import com.olivelabs.routing.RoutingAlgorithm;
 public class DynamicMetricAlgorithmTest {
 
 	NodeQueue nodes;
-	Node node;
+	INode node;
 	RoutingAlgorithm algorithm;
-	@Before
-	public void setUp() throws Exception{
+	
+	
+	@Test
+	public void testGetNodeByAlgorithmWithOutMetrics() throws Exception{
 		nodes = new NodeQueue();
 		for(int i=0;i<10;i++){
 			node = new Node("Localhost","909"+i,Metric.getMetric(Metric.STRATEGY_REQUEST_SIZE));
-			int value = (int)(Math.random() * 1000);
-			node.getMetric().setMetrics(new Long(value));
 			nodes.addNode(node);
-			System.out.println(node.getId());
 		}
 		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.DYNAMIC);
 		Assert.assertNotNull(algorithm);
-	}
-	@Test
-	public void testGetNodeByAlgorithm() {
-		
 		
 		for(int i=0;i<20;i++){
 			if (nodes.isEmpty() )break;
 			node = algorithm.getNodeByAlgorithm(nodes);
 			nodes.removeNode(node);
-			System.out.println(node.getId()+".."+node.getPort()+"..."+node.getMetric().getMetrics());
-			
+		}
+	}
+	
+	
+	@Test
+	public void testGetNodeByAlgorithmWithMetrics()  throws Exception{
+		nodes = new NodeQueue();
+		Random r = new Random();
+		for(int i=0;i<10;i++){
+			node = new Node("Localhost","909"+i,Metric.getMetric(Metric.STRATEGY_REQUEST_SIZE));
+			int value = r.nextInt(1000);
+			node.getMetric().setMetrics(Integer.valueOf(value));
+			nodes.addNode(node);
+		}
+		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.DYNAMIC);
+		Assert.assertNotNull(algorithm);
+		
+		for(int i=0;i<20;i++){
+			if (nodes.isEmpty() )break;
+			node = algorithm.getNodeByAlgorithm(nodes);
+			nodes.removeNode(node);
 		}
 	
+	}
+	
+	
+	@Test
+	public void testGetNodeByAlgorithmWithOutNodes() throws Exception{
+		nodes = new NodeQueue();
+		
+		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.DYNAMIC);
+		Assert.assertNotNull(algorithm);
+		
+		for(int i=0;i<20;i++){
+			if (nodes.isEmpty() )break;
+			node = algorithm.getNodeByAlgorithm(nodes);
+			nodes.removeNode(node);
+		}
 	}
 }
