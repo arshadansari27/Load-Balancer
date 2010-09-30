@@ -1,6 +1,8 @@
 package com.olivelabs.routing.implementation;
 
+import java.util.HashMap;
 import java.util.Random;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -50,10 +52,10 @@ public class DynamicMetricAlgorithmTest {
 		}
 		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.DYNAMIC,nodes);
 		Assert.assertNotNull(algorithm);
-		
 		for(int i=0;i<requestCount;i++){
 			if (nodes.isEmpty() )break;
 			node = algorithm.getNodeByAlgorithm();
+			
 			Assert.assertNotNull(node);
 		}
 	
@@ -70,6 +72,44 @@ public class DynamicMetricAlgorithmTest {
 			if (nodes.isEmpty() )break;
 			node = algorithm.getNodeByAlgorithm();
 			Assert.assertNotNull(node);
+		}
+	}
+	
+	@Test
+	public void testAllNodesUsed() throws Exception{
+		HashMap<String,Long> nodeMap = new HashMap<String,Long>();
+		nodes = new NodeQueue();
+		Random r = new Random();
+		for(int i=0;i<nodeSize;i++){
+			node = new Node("localhost","909"+i,Metric.getMetric(Metric.STRATEGY_REQUEST_SIZE));
+			int value = r.nextInt(1000);
+			node.getMetric().setMetrics(Integer.valueOf(value));
+			nodes.addNode(node);
+			nodeMap.put(node.getId()+"", Long.valueOf(0));
+			
+		}
+		
+		
+		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.DYNAMIC,nodes);
+		Assert.assertNotNull(algorithm);
+		
+		for(int i=0;i<requestCount;i++){
+			if (nodes.isEmpty() )break;
+			node = algorithm.getNodeByAlgorithm();
+						
+			long count = nodeMap.get(node.getId()+"");
+			count++;
+			nodeMap.put(node.getId()+"", Long.valueOf(count));
+			//System.out.println("Node["+node.getId()+"] => "+count);
+			Assert.assertNotNull(node);
+		}
+		if(nodeSize<requestCount){
+			Set<String> nodeIdKeys = nodeMap.keySet();
+			
+			 for(String nodeIDKey : nodeIdKeys){
+				 Assert.assertNotSame("Node not serving, although more " +
+				 		"requests than the size of node list were sent.", 0 , nodeMap.get(nodeIDKey));
+			 }
 		}
 	}
 }
