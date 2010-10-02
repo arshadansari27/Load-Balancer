@@ -15,11 +15,11 @@ public class RandomAlgorithm extends RoutingAlgorithm {
 		int index = random.nextInt(nodeQueue.getSize());
 		synchronized(this)
 			{
-				node = nodeQueue.getNode(0);
+				node = nodeQueue.getNode(index%nodeQueue.getSize());
 			}
-		nodeQueue.removeNode(node);
+		
 		node.setMetricValue(Integer.valueOf(1));
-		nodeQueue.addNode(node,nodeQueue.getSize());
+		
 		return node;
 	}
 

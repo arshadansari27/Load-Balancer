@@ -8,6 +8,7 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.olivelabs.data.INode;
@@ -25,6 +26,7 @@ public class RandomAlgorithmTest {
 	int nodeSize = 20;
 	int requestCount = 300000;
 	
+	@Ignore
 	@Test
 	public void testGetNodeByAlgorithmWithOutMetrics() throws Exception{
 		nodes = new NodeQueue();
@@ -46,7 +48,7 @@ public class RandomAlgorithmTest {
 		}
 	}
 	
-	
+	@Ignore
 	@Test
 	public void testGetNodeByAlgorithmWithMetrics()  throws Exception{
 		nodes = new NodeQueue();
@@ -69,7 +71,7 @@ public class RandomAlgorithmTest {
 	
 	}
 	
-	
+	@Ignore
 	@Test
 	public void testGetNodeByAlgorithmWithOutNodes() throws Exception{
 		nodes = new NodeQueue();
@@ -83,6 +85,8 @@ public class RandomAlgorithmTest {
 			Assert.assertNotNull(node);
 		}
 	}
+	
+	
 	@Test
 	public void testAllNodesUsed() throws Exception{
 		HashMap<String,Long> nodeMap = new HashMap<String,Long>();
@@ -108,7 +112,7 @@ public class RandomAlgorithmTest {
 			long count = nodeMap.get(node.getId()+"");
 			count++;
 			nodeMap.put(node.getId()+"", Long.valueOf(count));
-			//System.out.println("Node["+node.getId()+"] => "+count);
+			System.out.println("Node["+node.getId()+"] => "+count);
 			Assert.assertNotNull(node);
 		}
 		if(nodeSize<requestCount){
