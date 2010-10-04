@@ -16,10 +16,10 @@ import org.xlightweb.server.HttpServer;
 import org.xsocket.Execution;
 import org.xsocket.ILifeCycle;
 
+import com.olivelabs.data.IMetric;
 import com.olivelabs.data.INode;
 import com.olivelabs.data.Node;
 import com.olivelabs.loadbalancer.IBalancer;
-import com.olivelabs.routing.RoutingAlgorithm;
 
 public class HttpRequestHandler implements IHttpRequestHandler, ILifeCycle {
 	private IBalancer balancer;
@@ -58,7 +58,8 @@ public class HttpRequestHandler implements IHttpRequestHandler, ILifeCycle {
 					.getPort().intValue(), url.getFile()));
 			IHttpResponseHandler responseHandler = new HttpResponseHandler(exchange);
 			httpClient.send(request, responseHandler);
-		} catch (ConnectException ce) {
+			System.out.println("Sending Request to "+node.getHost()+":"+node.getPort()+"...");
+		} catch (ConnectException ce) { 	
 			exchange.sendError(502, ce.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();

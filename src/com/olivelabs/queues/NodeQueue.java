@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.olivelabs.data.INode;
 import com.olivelabs.data.Node;
-import com.olivelabs.routing.RoutingAlgorithm;
 
 public class NodeQueue {
 

@@ -3,12 +3,15 @@ package com.olivelabs.routing.implementation;
 import java.util.Random;
 
 import com.olivelabs.data.INode;
-import com.olivelabs.routing.RoutingAlgorithm;
+import com.olivelabs.queues.NodeQueue;
+import com.olivelabs.routing.IRouter;
 
-public class RandomAlgorithm extends RoutingAlgorithm {
+public class RandomAlgorithm implements IRouter {
+
+	
 
 	@Override
-	public INode getNodeByAlgorithm() {
+	public INode getNodeByAlgorithm(NodeQueue nodeQueue) {
 		if(nodeQueue.isEmpty()) return null;
 		INode node;
 		Random random = new Random();
@@ -18,7 +21,7 @@ public class RandomAlgorithm extends RoutingAlgorithm {
 				node = nodeQueue.getNode(index%nodeQueue.getSize());
 			}
 		
-		node.setMetricValue(Integer.valueOf(1));
+		
 		
 		return node;
 	}

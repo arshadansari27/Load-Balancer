@@ -1,27 +1,86 @@
 package com.olivelabs.data;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public abstract class Metric {
+public class Metric implements IMetric{
 	
-	public static final String STRATEGY_REQUEST_SIZE = "com.olivelabs.data.metrics.MetricRequest";
-	public static final String STRATEGY_DYNAMIC = "";
-	public static List<String> metrics;
+	private Double requestServedSizeInMB;
+	private static Double totalRequestServedSizeInMB;
+	private Long numberOfRequestServed;
+	private static Long totalNumberOfRequestServed;
+	private IMetricCalculator metricCalculator;
 	
-	static {
-		metrics = new ArrayList<String>();
-		metrics.add(STRATEGY_REQUEST_SIZE);
-		metrics.add(STRATEGY_DYNAMIC);
+	static{
+		totalNumberOfRequestServed = 0L;
+		totalRequestServedSizeInMB = 0.0D;
 	}
-	public static Metric getMetric(String strategy) throws Exception{
-		if (metrics.contains(strategy)){
-		return (Metric) Class.forName(strategy).newInstance();
-		}
-		else
-			throw new Exception("Strategy not defined!!!");
+	public Metric(){
+		
+		requestServedSizeInMB = 0.0D;
+		numberOfRequestServed = 0L;
 	}
-	public abstract double getMetrics();
+	public Metric(IMetricCalculator mCal){
+		this.metricCalculator  = mCal;
+		requestServedSizeInMB = 0.0D;
+		numberOfRequestServed = 0L;
+	}
+		
+	
+	public void setMetricCalculator(IMetricCalculator metricCalculator){
+		this.metricCalculator = metricCalculator;
+	}
+	
+	public IMetricCalculator getMetricCalculator(){
+		return this.metricCalculator;
+	}
+	
+	public double getMetrics() throws RuntimeException{
+		if(this.metricCalculator == null) throw new RuntimeException("The Metric Calculator reference is null and was not set");
+		return this.metricCalculator.calculateMetrics(this);
+	}
 	//Incase of MetricRequest : Set will add and incase of Dynamic: it will replace
-	public abstract void setMetrics(Object value);
+	
+
+	public Long getNumberOfRequestServed() {
+		// TODO Auto-generated method stub
+		return this.numberOfRequestServed;
+	}
+
+	public Double getRequestServedSizeInMB() {
+		// TODO Auto-generated method stub
+		return this.requestServedSizeInMB;
+	}
+
+	public Long getTotalNumberOfRequestServed() {
+		// TODO Auto-generated method stub
+		return totalNumberOfRequestServed;
+	}
+
+	public Double getTotalRequestServedSizeInMB() {
+		// TODO Auto-generated method stub
+		return totalRequestServedSizeInMB;
+	}
+
+	public void setNumberOfRequestServed(Long servedRequest) {
+		long requestServed = this.numberOfRequestServed.longValue() + servedRequest.longValue();
+		this.numberOfRequestServed = Long.valueOf(requestServed);
+		long totalRequestServed = this.totalNumberOfRequestServed.longValue() + servedRequest.longValue();
+		this.totalNumberOfRequestServed = Long.valueOf(totalRequestServed);
+		if(numberOfRequestServed.longValue() > totalNumberOfRequestServed.longValue()) totalNumberOfRequestServed =  Long.valueOf(numberOfRequestServed.longValue());
+		
+	}
+
+	public void setRequestServedSizeInMB(Double servedRequestSizeInMB) {
+		double requestSizeServed = this.requestServedSizeInMB.doubleValue() + servedRequestSizeInMB.doubleValue();
+		this.requestServedSizeInMB = Double.valueOf(requestSizeServed);
+		double totalRequestSizedServed = this.totalRequestServedSizeInMB.doubleValue() + servedRequestSizeInMB.doubleValue();
+		this.totalRequestServedSizeInMB = Double.valueOf(totalRequestSizedServed);
+		if(requestServedSizeInMB.doubleValue() > totalRequestServedSizeInMB.doubleValue()) totalRequestServedSizeInMB = Double.valueOf(requestServedSizeInMB.doubleValue());
+	}
+	@Override
+	public void resetTotalMetrics() {
+		totalNumberOfRequestServed = 0L;
+		totalRequestServedSizeInMB = 0.0D;
+	}
+
+	
 }

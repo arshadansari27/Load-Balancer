@@ -5,7 +5,7 @@ public class Node implements INode {
 	private Integer id;
 	private String host;
 	private Long port;
-	private Metric metric;
+	private IMetric metric;
 	private static int count=0;
 	public Node(String host, String port, Metric metric) {
 		this.id = 1000 + count++;
@@ -19,10 +19,10 @@ public class Node implements INode {
 	public Long getPort() {
 		return port;
 	}
-	public Metric getMetric() {
+	public IMetric getMetric() {
 		return metric;
 	}
-	public void setMetric(Metric metric) {
+	public void setMetric(IMetric metric) {
 		this.metric = metric;
 	}
 	public int hashCode(){
@@ -34,7 +34,11 @@ public class Node implements INode {
 		return this.id;
 	}
 	@Override
-	public void setMetricValue(Object value) {
-		metric.setMetrics(value);
+	public void setNumberOfRequestServed(Long value) {
+		metric.setNumberOfRequestServed(value);
+	}
+	
+	public void setRequestServedSizeInMB(Double value){
+		metric.setRequestServedSizeInMB(value);
 	}
 }

@@ -15,7 +15,7 @@ public class NodeTest {
 		
 		_host = "localhost";
 		_port = "9090";
-		metric = Metric.getMetric(Metric.STRATEGY_REQUEST_SIZE);
+		metric = new Metric();
 		_node = new Node(_host,_port, metric);
 	}
 	
@@ -31,7 +31,7 @@ public class NodeTest {
 	
 	@Test
 	public void testGetMetric(){
-		Metric metric = _node.getMetric();
+		IMetric metric = _node.getMetric();
 		Assert.assertNotNull(metric);
 		
 	}

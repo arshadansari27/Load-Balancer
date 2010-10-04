@@ -3,12 +3,14 @@ package com.olivelabs.routing.implementation;
 import java.util.concurrent.Executor;
 
 import com.olivelabs.data.INode;
-import com.olivelabs.routing.RoutingAlgorithm;
+import com.olivelabs.queues.NodeQueue;
+import com.olivelabs.routing.IRouter;
 
-public class DynamicMetricAlgorithm extends RoutingAlgorithm {
+
+public class DynamicMetricAlgorithm implements IRouter {
 
 	INode node;
-	NodeSetter nodeSetter = new NodeSetter(this);
+	NodeSetter nodeSetter;
 	double highestRequest = 10000D;
 
 	Executor executor = new Executor() {
@@ -21,15 +23,19 @@ public class DynamicMetricAlgorithm extends RoutingAlgorithm {
 	};
 
 	@Override
-	public synchronized INode getNodeByAlgorithm() {
+	public synchronized INode getNodeByAlgorithm(NodeQueue nodeQueue) {
 		if (node == null)
-			getBestNode();
-		else
+			getBestNode(nodeQueue);
+		else{
+			nodeSetter = new NodeSetter(this, nodeQueue);
 			executor.execute(nodeSetter);
+			
+		}
+			
 		return node;
 	}
 
-	public synchronized void getBestNode() {
+	public synchronized void getBestNode(NodeQueue nodeQueue) {
 		if (nodeQueue.isEmpty())
 			return;
 		
@@ -51,19 +57,18 @@ public class DynamicMetricAlgorithm extends RoutingAlgorithm {
 			}
 			else{
 				if (highestRequest <= metric)
-					getHighestRequest();
+					getHighestRequest(nodeQueue);
 			}
 		}
 		if (id != null) {
 			node = nodeQueue.getNodeById(id);
-			node.setMetricValue(Integer.valueOf(1));
 			//System.out.println("Node[" + node.getId() + "] served ["
 				//	+ node.getMetric().getMetrics() + "] requests..");
 		} else
 			throw new RuntimeException("Dynamic Algorithm didn't get any node!");
 	}
 
-	private void getHighestRequest() {
+	private void getHighestRequest(NodeQueue nodeQueue) {
 		double temp = 0;
 		double metric = 0;
 		for (INode n : nodeQueue.getAll()) {
@@ -78,15 +83,17 @@ public class DynamicMetricAlgorithm extends RoutingAlgorithm {
 	private class NodeSetter implements Runnable {
 
 		DynamicMetricAlgorithm algorithm;
-
-		public NodeSetter(DynamicMetricAlgorithm algorithm) {
+		NodeQueue nodeQueue;
+		public NodeSetter(DynamicMetricAlgorithm algorithm,NodeQueue nodeQueue) {
 			this.algorithm = algorithm;
+			this.nodeQueue = nodeQueue;
 		}
 
 		@Override
 		public void run() {
-			algorithm.getBestNode();
+			algorithm.getBestNode(nodeQueue);
 		}
 
 	}
+
 }

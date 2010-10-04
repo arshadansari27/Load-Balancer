@@ -4,8 +4,9 @@ public interface INode {
 
 	public String getHost();
 	public Long getPort();
-	public Metric getMetric();
-	public void setMetric(Metric metric);
+	public IMetric getMetric();
+	public void setMetric(IMetric metric);
 	public Integer getId();
-	public void setMetricValue(Object value);
+	public void setRequestServedSizeInMB(Double value);
+	void setNumberOfRequestServed(Long value);
 }

@@ -1,115 +1,56 @@
 package com.olivelabs.routing.implementation;
 
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Set;
+import static org.junit.Assert.*;
 
-import org.junit.Assert;
-import org.junit.Ignore;
+
+import org.junit.Before;
 import org.junit.Test;
 
-import com.olivelabs.data.INode;
-import com.olivelabs.data.Metric;
-import com.olivelabs.data.Node;
-import com.olivelabs.queues.NodeQueue;
-import com.olivelabs.routing.RoutingAlgorithm;
+import com.olivelabs.data.metrics.MetricCalculatorFactory;
 
 
-public class DynamicMetricAlgorithmTest {
+public class DynamicMetricAlgorithmTest extends AlgorithmTest{
 
-	NodeQueue nodes;
-	INode node;
-	RoutingAlgorithm algorithm;
-	int nodeSize = 20;
-	int requestCount = 50000;
+	
 	
 	@Test
 	public void testGetNodeByAlgorithmWithOutMetrics() throws Exception{
-		nodes = new NodeQueue();
-		for(int i=0;i<nodeSize;i++){
-			node = new Node("Localhost","909"+i,Metric.getMetric(Metric.STRATEGY_REQUEST_SIZE));
-			nodes.addNode(node);
-		}
-		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.DYNAMIC,nodes);
-		Assert.assertNotNull(algorithm);
+		metricCalculator= MetricCalculatorFactory.getMetricCalculator(MetricCalculatorFactory.STRATEGY_REQUEST);
+		super.testGetNodeByAlgorithmWithOutMetrics(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
+		metricCalculator= MetricCalculatorFactory.getMetricCalculator(MetricCalculatorFactory.STRATEGY_REQUEST_SIZE);
+		super.testGetNodeByAlgorithmWithOutMetrics(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
+		metricCalculator= MetricCalculatorFactory.getMetricCalculator(MetricCalculatorFactory.STRATEGY_DYNAMIC_NODE_INFO);
+		super.testGetNodeByAlgorithmWithOutMetrics(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
 		
-		for(int i=0;i<requestCount;i++){
-			if (nodes.isEmpty() )break;
-			node = algorithm.getNodeByAlgorithm();
-			Assert.assertNotNull(node);
-		}
 	}
 	
 	@Test
 	public void testGetNodeByAlgorithmWithMetrics()  throws Exception{
-		nodes = new NodeQueue();
-		Random r = new Random();
-		for(int i=0;i<nodeSize;i++){
-			node = new Node("Localhost","909"+i,Metric.getMetric(Metric.STRATEGY_REQUEST_SIZE));
-			int value = r.nextInt(1000);
-			node.getMetric().setMetrics(Integer.valueOf(value));
-			nodes.addNode(node);
-		}
-		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.DYNAMIC,nodes);
-		Assert.assertNotNull(algorithm);
-		for(int i=0;i<requestCount;i++){
-			if (nodes.isEmpty() )break;
-			node = algorithm.getNodeByAlgorithm();
-			
-			Assert.assertNotNull(node);
-		}
-	
+		metricCalculator= MetricCalculatorFactory.getMetricCalculator(MetricCalculatorFactory.STRATEGY_REQUEST);
+		super.testGetNodeByAlgorithmWithMetrics(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
+		metricCalculator= MetricCalculatorFactory.getMetricCalculator(MetricCalculatorFactory.STRATEGY_REQUEST_SIZE);
+		super.testGetNodeByAlgorithmWithMetrics(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
+		metricCalculator= MetricCalculatorFactory.getMetricCalculator(MetricCalculatorFactory.STRATEGY_DYNAMIC_NODE_INFO);
+		super.testGetNodeByAlgorithmWithMetrics(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
 	}
 	
 	@Test
 	public void testGetNodeByAlgorithmWithOutNodes() throws Exception{
-		nodes = new NodeQueue();
-		
-		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.DYNAMIC,nodes);
-		Assert.assertNotNull(algorithm);
-		//Thread.currentThread().sleep(20000);
-		for(int i=0;i<requestCount;i++){
-			if (nodes.isEmpty() )break;
-			node = algorithm.getNodeByAlgorithm();
-			Assert.assertNotNull(node);
-		}
+		metricCalculator= MetricCalculatorFactory.getMetricCalculator(MetricCalculatorFactory.STRATEGY_REQUEST);
+		super.testGetNodeByAlgorithmWithOutNodes(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
+		metricCalculator= MetricCalculatorFactory.getMetricCalculator(MetricCalculatorFactory.STRATEGY_REQUEST_SIZE);
+		super.testGetNodeByAlgorithmWithMetrics(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
+		metricCalculator= MetricCalculatorFactory.getMetricCalculator(MetricCalculatorFactory.STRATEGY_DYNAMIC_NODE_INFO);
+		super.testGetNodeByAlgorithmWithMetrics(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
 	}
 	
 	@Test
 	public void testAllNodesUsed() throws Exception{
-		HashMap<String,Long> nodeMap = new HashMap<String,Long>();
-		nodes = new NodeQueue();
-		Random r = new Random();
-		for(int i=0;i<nodeSize;i++){
-			node = new Node("localhost","909"+i,Metric.getMetric(Metric.STRATEGY_REQUEST_SIZE));
-			int value = r.nextInt(1000);
-			node.getMetric().setMetrics(Integer.valueOf(value));
-			nodes.addNode(node);
-			nodeMap.put(node.getId()+"", Long.valueOf(0));
-			
-		}
-		
-		
-		algorithm = RoutingAlgorithm.getRoutingAlgorithm(RoutingAlgorithm.DYNAMIC,nodes);
-		Assert.assertNotNull(algorithm);
-		
-		for(int i=0;i<requestCount;i++){
-			if (nodes.isEmpty() )break;
-			node = algorithm.getNodeByAlgorithm();
-						
-			long count = nodeMap.get(node.getId()+"");
-			count++;
-			nodeMap.put(node.getId()+"", Long.valueOf(count));
-			//System.out.println("Node["+node.getId()+"] => "+count);
-			Assert.assertNotNull(node);
-		}
-		if(nodeSize<requestCount){
-			Set<String> nodeIdKeys = nodeMap.keySet();
-			
-			 for(String nodeIDKey : nodeIdKeys){
-				 Assert.assertNotSame("Node not serving, although more " +
-				 		"requests than the size of node list were sent.", 0 , nodeMap.get(nodeIDKey));
-			 }
-		}
+		metricCalculator= MetricCalculatorFactory.getMetricCalculator(MetricCalculatorFactory.STRATEGY_REQUEST);
+		super.testAllNodesUsed(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
+		metricCalculator= MetricCalculatorFactory.getMetricCalculator(MetricCalculatorFactory.STRATEGY_REQUEST_SIZE);
+		super.testGetNodeByAlgorithmWithMetrics(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
+		metricCalculator= MetricCalculatorFactory.getMetricCalculator(MetricCalculatorFactory.STRATEGY_DYNAMIC_NODE_INFO);
+		super.testGetNodeByAlgorithmWithMetrics(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
 	}
 }

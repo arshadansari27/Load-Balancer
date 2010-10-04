@@ -1,20 +1,23 @@
 package com.olivelabs.loadbalancer.implementation;
 
+import com.olivelabs.data.IMetric;
+import com.olivelabs.data.IMetricCalculator;
 import com.olivelabs.data.INode;
 import com.olivelabs.data.Metric;
 import com.olivelabs.data.Node;
-import com.olivelabs.data.metrics.MetricRequest;
+import com.olivelabs.data.metrics.MetricCalculatorFactory;
 import com.olivelabs.loadbalancer.IBalancer;
 import com.olivelabs.queues.NodeQueue;
-import com.olivelabs.routing.RoutingAlgorithm;
+import com.olivelabs.routing.IRouter;
+import com.olivelabs.routing.implementation.RoutingAlgorithmFactory;
 
 public class HttpBalancer implements IBalancer {
 
-	NodeQueue queue;
-	String algorithmName;
-	RoutingAlgorithm routingAlgorithm;
-	String metricType;
-
+	private NodeQueue queue;
+	private String algorithmName;
+	private IRouter router;
+	private String metricType;
+	private IMetricCalculator metricCalculator;
 	public HttpBalancer() {
 		queue = new NodeQueue();
 		//routingAlgorithm = RoutingAlgorithm.getRoutingAlgorithm(algorithmName);
@@ -26,41 +29,42 @@ public class HttpBalancer implements IBalancer {
 
 	public void setAlgorithmName(String algorithmName) throws Exception {
 		this.algorithmName = algorithmName;
-		if(!(RoutingAlgorithm.DYNAMIC.equals(this.algorithmName) || RoutingAlgorithm.ROUND_ROBIN.equals(this.algorithmName)))
+		if(!(RoutingAlgorithmFactory.hasRoutingAlgorithm(algorithmName)))
 			throw new Exception("Please set Routing Algorithm name property!!");
-		setRoutingAlgorithm(RoutingAlgorithm.getRoutingAlgorithm(algorithmName,queue));
+		router = RoutingAlgorithmFactory.getRoutingAlgorithm(algorithmName);
 	}
 
-	public RoutingAlgorithm getRoutingAlgorithm() {
-		return routingAlgorithm;
-	}
-
-	public void setRoutingAlgorithm(RoutingAlgorithm routingAlgorithm) {
-		this.routingAlgorithm = routingAlgorithm;
-		
-	}
 
 	public String getMetricType() {
 		return metricType;
 	}
 
-	public void setMetricType(String metricType) {
+	public void setMetricType(String metricType) throws Exception {
 		this.metricType = metricType;
+		IMetricCalculator newMetricCalculator = MetricCalculatorFactory.getMetricCalculator(metricType);
+		setMetricCalculator(newMetricCalculator);
+	}
+
+	public IMetricCalculator getMetricCalculator() {
+		return metricCalculator;
+	}
+
+	public void setMetricCalculator(IMetricCalculator metricCalculator) {
+		this.metricCalculator = metricCalculator;
 	}
 
 	@Override
 	public INode getNode() throws RuntimeException{
-		if(this.routingAlgorithm == null){
+		if(this.router == null){
 			throw new RuntimeException("Please set the routing algorithm property");
 		}
-		INode node = routingAlgorithm.getNodeByAlgorithm();
+		INode node = router.getNodeByAlgorithm(this.queue);
 		return node;
 	}
 	
 	public INode addNode(String host, String port) throws Exception{
-		if(!(Metric.STRATEGY_DYNAMIC.equals(metricType)|| Metric.STRATEGY_REQUEST_SIZE.equals(metricType)))
-			throw new RuntimeException("Please set the metric type property");
-		Metric metric = Metric.getMetric(metricType);
+		Metric metric = new Metric();
+		metric.setMetricCalculator(metricCalculator);
 		INode node = new Node(host,port, metric);
 		queue.addNode(node);
 		return node;

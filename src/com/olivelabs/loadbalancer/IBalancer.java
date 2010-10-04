@@ -2,7 +2,6 @@ package com.olivelabs.loadbalancer;
 
 import com.olivelabs.data.INode;
 import com.olivelabs.data.Node;
-import com.olivelabs.routing.RoutingAlgorithm;
 
 public interface IBalancer {
 
@@ -23,13 +22,10 @@ public interface IBalancer {
 
 	public void setAlgorithmName(String algorithmName) throws Exception ;
 
-	public RoutingAlgorithm getRoutingAlgorithm() ;
 	
-	public void setRoutingAlgorithm(RoutingAlgorithm routingAlgorithm);
-
 	public String getMetricType();
 
-	public void setMetricType(String metricType);
+	public void setMetricType(String metricType) throws Exception;
 
 	
 }
