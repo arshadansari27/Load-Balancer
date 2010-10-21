@@ -11,6 +11,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.*;
 
+
 public class NioClient implements Runnable {
 	// The host:port combination to connect to
 	private InetAddress hostAddress;
