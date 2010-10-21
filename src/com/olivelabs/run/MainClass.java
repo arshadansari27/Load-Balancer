@@ -3,14 +3,18 @@ package com.olivelabs.run;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.Properties;
 
-import org.xlightweb.RequestHandlerChain;
-import org.xlightweb.server.HttpServer;
 
 import com.olivelabs.loadbalancer.IBalancer;
+import com.olivelabs.loadbalancer.IClient;
+import com.olivelabs.loadbalancer.IServerHandler;
+import com.olivelabs.loadbalancer.IServer;
 import com.olivelabs.loadbalancer.implementation.HttpBalancer;
-import com.olivelabs.loadbalancer.server.HttpRequestHandler;
+import com.olivelabs.loadbalancer.implementation.HttpClient;
+import com.olivelabs.loadbalancer.implementation.HttpServer;
+import com.olivelabs.loadbalancer.implementation.HttpServerHandler;
 
 
 public class MainClass {
@@ -39,7 +43,7 @@ public class MainClass {
 			String lbHost = (String) props.get("lb.host");
 			String routingAlgorithm = (String) props.get("routing.algorithm");
 			String metricStrategy =(String) props.get("metric.strategy");
-			RequestHandlerChain chain = new RequestHandlerChain();
+			//RequestHandlerChain chain = new RequestHandlerChain();
 			IBalancer balancer = new HttpBalancer();
 			//
 			//balancer.setAlgorithmName(RoutingAlgorithm.ROUND_ROBIN);
@@ -48,18 +52,25 @@ public class MainClass {
 			//balancer.setMetricType(Metric.STRATEGY_REQUEST_SIZE);
 			System.out.println("Metric Strategy : "+metricStrategy);
 			balancer.setMetricType(metricStrategy);
-			balancer.addNode("localhost","80");
+			balancer.addNode("www.google.com","80");
+			balancer.addNode("www.finicity.com","80");
+			balancer.addNode("www.thedyinggod.com","80");
 			//balancer.addNode("localhost","8090");
 			
-			HttpRequestHandler requestHandler = new HttpRequestHandler(balancer);
-			chain.addLast(requestHandler);
+			//HttpRequestHandler requestHandler = new HttpRequestHandler(balancer);
+			//chain.addLast(requestHandler);
 
-			HttpServer proxy =  new HttpServer(lbPort, chain);
-			proxy.setAutoCompressThresholdBytes(Integer.MAX_VALUE);
-			proxy.setAutoUncompress(false);
+			//HttpServer proxy =  new HttpServer(lbPort, chain);
+			//proxy.setAutoCompressThresholdBytes(Integer.MAX_VALUE);
+			//proxy.setAutoUncompress(false);
 			
-			proxy.run();
+			//proxy.run();
 			
+			IServer server = new HttpServer("localhost", 9090);
+			IClient client = new HttpClient(balancer);
+			IServerHandler requestHandler = new HttpServerHandler(client);
+			server.setRequestHandler(requestHandler);
+			server.start();
 			System.out.println("Load balancer is running!");
 			//proxy.start();
 		} catch (Exception e) {

@@ -3,7 +3,6 @@ package com.olivelabs.data.metrics;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.xsocket.IDestroyable;
 
 import com.olivelabs.data.IMetricCalculator;
 
