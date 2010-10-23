@@ -19,6 +19,9 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.ning.http.client.AsyncCompletionHandler;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.Response;
 import com.olivelabs.data.INode;
 import com.olivelabs.loadbalancer.IBalancer;
 import com.olivelabs.loadbalancer.IClient;
@@ -34,33 +37,19 @@ public class HttpServerTest {
     
 	@Before
 	public void setUp() throws Exception{
-		server = new HttpServer("localhost", 9090);
-		IClient client = createMock(IClient.class);
+		server = new HttpServer(9090,10);
+		IClient client = new HttpClientMock();
 		INode n1 = createMock(INode.class);
 		expect(n1.getHost()).andReturn("localhost");
 		expect(n1.getPort()).andReturn(new Long(9999));
 		replay(n1);
 		IoSession session = createMock(IoSession.class);
-		
 		replay(session);
-		expect(client.sendRequest("GET / HTTP1.0\n\n", session)).andReturn(true);
-		replay(client);
-		requestHandler = new HttpServerHandler(client);
-		server.setRequestHandler(requestHandler);
+		
 		
 	}
 	
 	
-	
-	@Test
-	public void testRestart() throws Exception {
-		server.start();
-		server.restart();
-		server.stop();
-	}
-
-	
-
 	@Test
 	public void testStop() throws Exception {
 		server.start();
@@ -70,45 +59,24 @@ public class HttpServerTest {
 	
 	@Test
 	public void testSendingRequest() throws Exception{
-		fail("Some mock object problem that needs to be resolved!");
+		//fail("Some mock object problem that needs to be resolved!");
 		server.start();
-		NioSocketConnector connector = new NioSocketConnector();
-		connector.setConnectTimeoutMillis(CONNECT_TIMEOUT);
-		connector.getFilterChain().addLast( "codec", new ProtocolCodecFilter( new TextLineCodecFactory( Charset.forName( "UTF-8" ))));
-		connector.getFilterChain().addLast("logger", new LoggingFilter());
-        connector.setHandler(new IoHandlerAdapter(){
-        	 @Override
-        	 public void sessionOpened(IoSession session) {
-        		 session.write("GET / HTTP1.0\n\n");
-        		
-        	 }
-        	 
-        	 @Override
-        	 public void messageReceived(IoSession session, Object message) {
-        		 System.out.println(message.toString());
-        	 }
-        });
-        
-        
-        
-        
-        IoSession session;
-        for (;;) {
-            try {
-                ConnectFuture future = connector.connect(new InetSocketAddress("localhost", 9090));
-                future.awaitUninterruptibly();
-                session = future.getSession();
-                break;
-            } catch (RuntimeIoException e) {
-                System.err.println("Failed to connect.");
-                e.printStackTrace();
-                Thread.sleep(5000);
-            }
-        }
-
-        // wait until the summation is done
-        session.getCloseFuture().awaitUninterruptibly();
-        connector.dispose();
+		AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
+	    asyncHttpClient.prepareGet("http://localhost:9090/ ").execute(new AsyncCompletionHandler<Response>(){
+	        
+	        @Override
+	        public Response onCompleted(Response  response) throws Exception{
+	            System.out.println("Got the response");
+	            System.out.println(response.getResponseBody());
+	            return response;
+	        }
+	        
+	        @Override
+	        public void onThrowable(Throwable t){
+	        	System.out.println("Shit happened!");
+	        }
+	    });
+	    Thread.currentThread().sleep(20000);
         server.stop();
 	}
 }
