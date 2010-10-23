@@ -1,9 +1,14 @@
 package com.olivelabs.loadbalancer;
 
-import org.apache.mina.core.session.IoSession;
+
+import org.simpleframework.http.Response;
+
+import com.ning.http.client.Request;
 
 public interface IClient{
-	
-	public boolean isFinished();
-	public boolean sendRequest(Object request,IoSession serverSession) throws Exception;
+		public boolean sendRequest(Request request,Response response) throws Exception;
+
+		public boolean isFinished();
+
+		public boolean sendRequest(String request, Response response) throws Exception;
 }

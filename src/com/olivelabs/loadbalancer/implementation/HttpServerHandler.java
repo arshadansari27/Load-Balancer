@@ -1,52 +1,52 @@
 package com.olivelabs.loadbalancer.implementation;
 
-import java.net.URL;
-import java.util.Date;
+import org.simpleframework.http.*;
+import org.simpleframework.util.thread.Scheduler;
 
-import org.apache.mina.core.service.IoHandlerAdapter;
-import org.apache.mina.core.session.IdleStatus;
-import org.apache.mina.core.session.IoSession;
-
-import com.olivelabs.data.INode;
-import com.olivelabs.loadbalancer.IBalancer;
+import com.olivelabs.example.AsynchronousService.Task;
 import com.olivelabs.loadbalancer.IClient;
 import com.olivelabs.loadbalancer.IServerHandler;
 
-public class HttpServerHandler extends IoHandlerAdapter implements IServerHandler {
+public class HttpServerHandler implements IServerHandler {
 	
 	private IClient client;
+	private Scheduler queue;
 	
-	public HttpServerHandler(IClient client) {
+	public HttpServerHandler(Scheduler queue){
+		this.queue = queue;
+	}
+	
+	public IClient getClient() {
+		return client;
+	}
+
+
+
+	public void setClient(IClient client) {
 		this.client = client;
+	}
+
+
+	public Scheduler getQueue() {
+		return queue;
+	}
+
+
+
+	public void setQueue(Scheduler queue) {
+		this.queue = queue;
+	}
+
+
+
+	@Override
+	public void handle(Request request, Response response) {
+			HttpWorker worker = new HttpWorker(request, response,client);
+			queue.execute(worker);
 	}
 	
 	
-	 @Override
-	    public void exceptionCaught( IoSession session, Throwable cause ) throws Exception
-	    {
-	        cause.printStackTrace();
-	    }
-
-	    /**
-	     * If the message is 'quit', we exit by closing the session. Otherwise,
-	     * we return the current date.
-	     */
-	    @Override
-	    public void messageReceived( IoSession session, Object message ) throws Exception
-	    {      
-	    	String request = message.toString();
-	    	client.sendRequest(message, session);
-	    	while(!client.isFinished());
-	    	session.close(true);
-	        
-	    }
-
-	    /**
-	     * On idle, we just write a message on the console
-	     */
-	    @Override
-	    public void sessionIdle( IoSession session, IdleStatus status ) throws Exception
-	    {
-	        System.out.println( "IDLE " + session.getIdleCount( status ));
-	    }
+	
+	    
+	   
 }

@@ -1,12 +1,12 @@
 package com.olivelabs.loadbalancer;
 
-import org.apache.mina.core.session.IoSession;
+
+
+import org.simpleframework.http.Response;
+
+import com.ning.http.client.AsyncHandler;
 
 public interface IClientHandler {
-	public void sessionOpened(IoSession session);
-	public void messageReceived(IoSession session, Object message);
-	public void exceptionCaught(IoSession session, Throwable cause);
-	public void setRequest(Object request);
-	public void setSessionServer(IoSession sessionServer);
-	public boolean isFinished();
+	public void setServerResponse(Response response);
+	public AsyncHandler getAsyncHandler();
 }

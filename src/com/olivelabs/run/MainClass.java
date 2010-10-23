@@ -3,18 +3,15 @@ package com.olivelabs.run;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.util.Properties;
 
 
 import com.olivelabs.loadbalancer.IBalancer;
 import com.olivelabs.loadbalancer.IClient;
-import com.olivelabs.loadbalancer.IServerHandler;
 import com.olivelabs.loadbalancer.IServer;
 import com.olivelabs.loadbalancer.implementation.HttpBalancer;
 import com.olivelabs.loadbalancer.implementation.HttpClient;
 import com.olivelabs.loadbalancer.implementation.HttpServer;
-import com.olivelabs.loadbalancer.implementation.HttpServerHandler;
 
 
 public class MainClass {
@@ -55,21 +52,11 @@ public class MainClass {
 			balancer.addNode("www.google.com","80");
 			balancer.addNode("www.finicity.com","80");
 			balancer.addNode("www.thedyinggod.com","80");
-			//balancer.addNode("localhost","8090");
 			
-			//HttpRequestHandler requestHandler = new HttpRequestHandler(balancer);
-			//chain.addLast(requestHandler);
-
-			//HttpServer proxy =  new HttpServer(lbPort, chain);
-			//proxy.setAutoCompressThresholdBytes(Integer.MAX_VALUE);
-			//proxy.setAutoUncompress(false);
 			
-			//proxy.run();
-			
-			IServer server = new HttpServer("localhost", 9090);
+			IServer server = new HttpServer(9090,200);
 			IClient client = new HttpClient(balancer);
-			IServerHandler requestHandler = new HttpServerHandler(client);
-			server.setRequestHandler(requestHandler);
+			server.setClient(client);
 			server.start();
 			System.out.println("Load balancer is running!");
 			//proxy.start();

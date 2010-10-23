@@ -1,16 +1,22 @@
 package com.olivelabs.loadbalancer.implementation;
 
-import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
 
-import org.apache.mina.core.RuntimeIoException;
-import org.apache.mina.core.future.ConnectFuture;
-import org.apache.mina.core.service.IoHandler;
+import java.util.Map.Entry;
+
 import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
-import org.apache.mina.filter.logging.LoggingFilter;
-import org.apache.mina.transport.socket.nio.NioSocketConnector;
+
+
+import com.ning.http.client.AsyncCompletionHandler;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClientConfig;
+import com.ning.http.client.Cookie;
+import com.ning.http.client.Part;
+import com.ning.http.client.ProxyServer;
+import com.ning.http.client.RequestBuilder;
+import com.ning.http.client.RequestType;
+import com.ning.http.client.Response;
+
+import com.ning.http.client.Request;
 
 import com.olivelabs.data.INode;
 import com.olivelabs.loadbalancer.IBalancer;
@@ -22,50 +28,85 @@ public class HttpClient implements IClient {
 	private INode node;
 	private IBalancer balancer;
 	private IClientHandler clientHandler;
-	private NioSocketConnector connector;
+	AsyncHttpClient asyncHttpClient;
 	private static final long CONNECT_TIMEOUT = 30*1000L;
-	
-	
+	private boolean finished;
 	public HttpClient(IBalancer balancer){
 		this.balancer = balancer;
-		this.clientHandler = new HttpClientHandler();
-		connector = new NioSocketConnector();
-		connector.setConnectTimeoutMillis(CONNECT_TIMEOUT);
-		connector.getFilterChain().addLast( "logger", new LoggingFilter() );
-		connector.getFilterChain().addLast( "codec", new ProtocolCodecFilter( new TextLineCodecFactory( Charset.forName( "UTF-8" ))));
-		connector.setHandler((IoHandler) clientHandler);
+		clientHandler = new HttpClientHandler();
+	}
+
+	public boolean sendRequest(String request, org.simpleframework.http.Response serverResponse) throws Exception{
+		return sendRequest(getRequestFromString(request), serverResponse);
+	}
+	
+	
+	private Request getRequestFromString(String request) {
+		
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean sendRequest(Request request, org.simpleframework.http.Response serverResponse)
+			throws Exception {
+		clientHandler.setServerResponse(serverResponse);
+		INode node = balancer.getNode();
+		AsyncHttpClientConfig cf = new AsyncHttpClientConfig.Builder().setProxyServer(new ProxyServer(node.getHost(), node.getPort().intValue())).build();
+		asyncHttpClient = new AsyncHttpClient(cf);
+		finished = false;
+		
+	    System.out.println("Sending Request to : "+request.toString());
+		asyncHttpClient.executeRequest( updateRequest(request,node), new AsyncCompletionHandler<Response>(){
+	        
+	        @Override
+	        public Response onCompleted(Response  response) throws Exception{
+	            System.out.println("Got the response");
+	            System.out.println(response.getResponseBody());
+	            finished = true;
+	            return response;
+	        }
+	        
+	        @Override
+	        public void onThrowable(Throwable t){
+	        	finished = true;
+	        	System.out.println("Shit happened!");
+	        }
+	    });  
+		return true;
+	}
+
+	public String getNewURL(String oldURL, String host, Long port){
+		String subURL = oldURL.substring(oldURL.indexOf("/", 8));
+		String newUrl = "http://"+host+":"+port+subURL;
+		return newUrl;
+	}
+	public Request updateRequest(Request request, INode node){
+		RequestBuilder builder = new RequestBuilder(request.getType());
+		String url = request.getUrl();
+		builder.setUrl(getNewURL(url, node.getHost(), node.getPort()));
+		builder.setHeaders(request.getHeaders());
+		if(request.getType()==RequestType.POST || request.getType()==RequestType.PUT){
+			builder.setParameters(request.getParams());
+			builder.setBody(request.getByteData());
+		}
+			
+		if(request.getQueryParams()!=null){
+			
+			for(Entry<String, String> entry : request.getQueryParams().entries()){
+				builder.addQueryParameter(entry.getKey(), entry.getValue());
+			}
+		}
+			
+		for(Cookie cookie : request.getCookies())
+			builder.addCookie(cookie);
+	    
+	    request = builder.build();
+	    return request;
 		
 	}
-	
-	public boolean sendRequest(Object request,IoSession serverSession) throws Exception{
-		clientHandler.setRequest(request);
-		clientHandler.setSessionServer(serverSession);
-		node = balancer.getNode();
-		IoSession session;
-		for (;;) {
-            try {
-                ConnectFuture future = connector.connect(new InetSocketAddress(node.getHost(), node.getPort().intValue()));
-                future.awaitUninterruptibly();
-                session = future.getSession();
-                break;
-            } catch (RuntimeIoException e) {
-                System.err.println("Failed to connect.");
-                e.printStackTrace();
-                Thread.sleep(5000);
-            }
-        }
-
-        // wait until the summation is done
-        session.getCloseFuture().awaitUninterruptibly();
-        
-        connector.dispose();
-        return false;
-	}
-	
-	
 	public boolean isFinished() {
-		return clientHandler.isFinished();
-     }
-
-	
+		// TODO Auto-generated method stub
+		return this.finished;
+	}	
 }
