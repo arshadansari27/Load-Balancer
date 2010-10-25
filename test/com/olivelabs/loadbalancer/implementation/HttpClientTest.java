@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import sun.org.mozilla.javascript.internal.Node;
 
 import com.ning.http.client.Request;
 import com.ning.http.client.RequestBuilder;
