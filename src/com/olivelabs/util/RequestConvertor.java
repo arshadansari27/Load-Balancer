@@ -69,19 +69,13 @@ public class RequestConvertor {
 		}
 		String queryString = "";
 		Query query = serverRequest.getAddress().getQuery();
-		if(!query.isEmpty()){
-			queryString = "?";
-			int size = query.keySet().size();
-			int count=0;
+		if(query.keySet().size()!=0){
 			for(String key : query.keySet()){
-				queryString += key+"="+query.get(key);
-				if(count!=0 || count<(size-1)) queryString +="&";
-				count++;
+				requestBuilder.addQueryParameter(key, query.get(key));
 			}
 		}
 		
-		String url = protocol + host + port + serverRequest.getPath()+query;
-		System.out.println(url);
+		String url = protocol + host + port + serverRequest.getPath();
 		requestBuilder.setUrl(url);
 		return requestBuilder.build();
 		
