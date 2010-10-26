@@ -87,7 +87,7 @@ public class RequestConvertorTest {
 	public void testCopyRequest() throws Throwable {
 	   
 	   AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
-	   BoundRequestBuilder requestBuilder =  asyncHttpClient.prepareGet("http://localhost:8888/ ");
+	   BoundRequestBuilder requestBuilder =  asyncHttpClient.prepareGet("http://localhost:8888/Testing/interesting?who=me ");
 	   Request request = requestBuilder.build();
 	   requestBuilder.execute();
 	   synchronized(semaphore){

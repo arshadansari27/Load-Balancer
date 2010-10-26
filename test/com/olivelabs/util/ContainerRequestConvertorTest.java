@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.Random;
 
 import org.junit.After;
 import org.junit.Before;
@@ -19,6 +20,7 @@ import org.simpleframework.util.thread.Scheduler;
 
 import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.Part;
 import com.ning.http.client.RequestBuilder;
 import com.olivelabs.loadbalancer.IServerHandler;
 import com.olivelabs.loadbalancer.implementation.HttpServerHandler;
@@ -40,15 +42,13 @@ public class ContainerRequestConvertorTest {
 			@Override
 			public void handle(Request request, Response response) {
 				try {
-				com.ning.http.client.Request requestClient = new RequestBuilder(
-						RequestConvertor.getRequestType(request.getMethod())		
-				).build();
 				
-					RequestConvertor.copyRequest(request,  "www.google.com", "80");
+				
+				 com.ning.http.client.Request requestClient = RequestConvertor.copyRequest(request,  "www.google.com", "80");
 				
 					
 					
-					System.out.println(requestClient.toString());
+					System.out.println(requestClient.getUrl());
 					
 					
 					
@@ -82,7 +82,7 @@ public class ContainerRequestConvertorTest {
 	@Test
 	public void testCopyRequest() throws Throwable {
 		AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
-	    asyncHttpClient.prepareGet("http://localhost:8888/ ").execute(new AsyncCompletionHandler<Response>(){
+		AsyncCompletionHandler<Response> responseHandler = new AsyncCompletionHandler<Response>(){
 	        
 	      
 	        @Override
@@ -97,7 +97,9 @@ public class ContainerRequestConvertorTest {
 		            System.out.println(response.getResponseBody());
 				return null;
 			}
-	    });
+	    };
+	    asyncHttpClient.prepareGet("http://localhost:8888/Get/theworld?who=me ").execute(responseHandler);
+	    asyncHttpClient.preparePost("http://localhost:8888/Post/theworld?who=me ").execute(responseHandler);
 	    Thread.currentThread().sleep(2000);
         
 	}
