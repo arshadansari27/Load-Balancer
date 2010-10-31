@@ -22,15 +22,13 @@ public class HttpClientTest {
 
 	
 	public static HttpClient client;
-	public static HttpClientHandler clientHandler;
-	public static IoSession session;
+	
 	@Before
 	public void setUp() throws Exception{
 		IBalancer balancer = createMock(IBalancer.class);
 		INode n1 = new com.olivelabs.data.Node("www.finicity.com", "80", new Metric());
 		expect(balancer.getNode()).andReturn(n1);
 		replay(balancer);
-		clientHandler = new HttpClientHandler();
 		client = new HttpClient(balancer);
 		
 	}
@@ -38,19 +36,12 @@ public class HttpClientTest {
 	
 	@Test
 	public void testSendRequest() throws Exception{
-		RequestBuilder builder = new RequestBuilder(RequestType.GET);
-		builder.addHeader("content-type", "text/html");
-		builder.setUrl("http://www.google.com/");
-		Request request = builder.build();
-		client.sendRequest(request,null);
-		while(!client.isFinished())
-			Thread.currentThread().yield();
-		//Thread.currentThread().wait(10000);
+		RspHandler handler = new RspHandler();
+		client.send("GET / HTTP/1.1\n\n".getBytes(), handler);
+		System.out.println(handler.waitForResponse());
+		
 	}
 	
-	@Test
-	public void testGetNewURL() throws Exception{
-		System.out.println(client.getNewURL("http://www.google.com/test", "localhost", new Long(80)));		
-	}
+	
 	
 }

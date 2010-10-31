@@ -1,20 +1,21 @@
 package com.olivelabs.loadbalancer.implementation;
 
-import org.simpleframework.http.*;
-import org.simpleframework.util.thread.Scheduler;
 
-import com.olivelabs.example.AsynchronousService.Task;
+import java.io.IOException;
+import java.nio.channels.SocketChannel;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.olivelabs.loadbalancer.IClient;
 import com.olivelabs.loadbalancer.IServerHandler;
 
 public class HttpServerHandler implements IServerHandler {
-	
 	private IClient client;
-	private Scheduler queue;
 	
-	public HttpServerHandler(Scheduler queue){
-		this.queue = queue;
+	public HttpServerHandler(){
+		
 	}
+	
 	
 	public IClient getClient() {
 		return client;
@@ -27,26 +28,22 @@ public class HttpServerHandler implements IServerHandler {
 	}
 
 
-	public Scheduler getQueue() {
-		return queue;
-	}
-
-
-
-	public void setQueue(Scheduler queue) {
-		this.queue = queue;
-	}
-
-
-
-	@Override
-	public void handle(Request request, Response response) {
-			HttpWorker worker = new HttpWorker(request, response,client);
-			queue.execute(worker);
-	}
 	
-	
-	
-	    
+	public void processData(HttpServerHelper helper, SocketChannel socketChannel, byte[] data, int numRead) throws Exception{
+		byte[] dataCopy = new byte[numRead];
+		System.arraycopy(data, 0, dataCopy, 0, numRead);
+		ServerDataEvent dataEvent = new ServerDataEvent(helper, socketChannel, dataCopy);
+		
+		RspHandler handler = new RspHandler();
+		
+		
+		client.send(dataEvent.data, handler);
+		
+		dataEvent.server.send(dataEvent.socket, handler.waitForResponse() );
+		
+		System.out.println(dataEvent.data);
+		
+		
+	}
 	   
 }

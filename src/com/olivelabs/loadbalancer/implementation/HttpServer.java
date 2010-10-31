@@ -1,51 +1,78 @@
 package com.olivelabs.loadbalancer.implementation;
 
 
-import com.olivelabs.example.AsynchronousService;
 import com.olivelabs.loadbalancer.IClient;
 import com.olivelabs.loadbalancer.IServerHandler;
 import com.olivelabs.loadbalancer.IServer;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-
-import org.simpleframework.http.core.Container;
-import org.simpleframework.transport.connect.Connection;
-import org.simpleframework.transport.connect.SocketConnection;
-import org.simpleframework.util.thread.Scheduler;
+import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.spi.SelectorProvider;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HttpServer implements IServer {
 
-	private int port;
-	private int poolSize;
-	private Scheduler scheduler;
-	private Connection connection;
-	private SocketAddress address;
-	private IServerHandler requestHandler;
-	
+	private InetAddress lbHostAddress;
+	private int lbPort;
+	private HttpServerHelper helper;
+	private IServerHandler worker;
+	private ServerSocketChannel lbServerChannel;
+	private Selector selector;
+	private Executor executor;
+
 	
 	
 
 	public HttpServer(int port,int poolSize) throws IOException {
-		this.port = port;
-		this.poolSize = poolSize;
-		address = new InetSocketAddress(this.port);
-		scheduler = new Scheduler(this.poolSize);
-		requestHandler = new HttpServerHandler(scheduler);
-		connection = new SocketConnection(requestHandler);
+		System.out.println(InetAddress.getLocalHost());
+		this.lbHostAddress = InetAddress.getLocalHost();
+		
+		this.lbPort = port;
+		executor = Executors.newSingleThreadExecutor();
+		worker = new HttpServerHandler();
+		this.helper = new HttpServerHelper(worker);	
 	}
 
 	
 	@Override
 	public void start() throws Exception{
-			connection.connect(address);
+		this.selector = SelectorProvider.provider().openSelector();
 
+		// Create a new non-blocking server socket channel
+		this.lbServerChannel = ServerSocketChannel.open();
+		lbServerChannel.configureBlocking(false);
+
+		// Bind the server socket to the specified address and port
+		InetSocketAddress isa = new InetSocketAddress(this.lbHostAddress,this.lbPort);
+		System.out.println(isa.getHostName()+" "+isa.getAddress()+" "+isa.getPort()+" "+isa.isUnresolved());
+		lbServerChannel.socket().bind(isa);
+
+		// Register the server socket channel, indicating an interest in 
+		// accepting new connections
+		lbServerChannel.register(this.selector , SelectionKey.OP_ACCEPT);
+		
+		helper.setChannelAndSelector( lbServerChannel, selector);
+		
+		executor.execute(helper);
 	}
 
 	@Override
 	public void stop()  throws Exception{
-		connection.close();
+		helper.stop();
+		lbServerChannel.close();
+		lbServerChannel = null;
 	}
 
 
@@ -53,10 +80,16 @@ public class HttpServer implements IServer {
 
 	@Override
 	public void setClient(IClient client) {
-		requestHandler.setClient(client);
+		worker.setClient(client);
 	}
 
-	
+	public void restart() throws Exception{
+		
+		this.stop();
+		Thread.currentThread().wait(5000);
+		this.start();
+		
+	}
 
 	
 }

@@ -1,10 +1,13 @@
 package com.olivelabs.loadbalancer;
 
-import org.apache.mina.core.session.IdleStatus;
-import org.apache.mina.core.session.IoSession;
-import org.simpleframework.http.core.Container;
+import java.nio.channels.SocketChannel;
 
-public interface IServerHandler extends Container{
+import com.olivelabs.loadbalancer.implementation.HttpServerHelper;
+
+
+public interface IServerHandler {
 
 	public void setClient(IClient client);
+	public void processData(HttpServerHelper helper, SocketChannel socketChannel, byte[] data, int numRead) throws Exception;
+	
 }

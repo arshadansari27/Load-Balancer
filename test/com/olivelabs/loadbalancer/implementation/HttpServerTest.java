@@ -39,14 +39,7 @@ public class HttpServerTest {
 	public void setUp() throws Exception{
 		server = new HttpServer(9090,10);
 		IClient client = new HttpClientMock();
-		INode n1 = createMock(INode.class);
-		expect(n1.getHost()).andReturn("localhost");
-		expect(n1.getPort()).andReturn(new Long(9999));
-		replay(n1);
-		IoSession session = createMock(IoSession.class);
-		replay(session);
-		
-		
+		server.setClient(client);
 	}
 	
 	
@@ -73,10 +66,10 @@ public class HttpServerTest {
 	        
 	        @Override
 	        public void onThrowable(Throwable t){
-	        	System.out.println("Shit happened!");
+	        	System.out.println(t.getMessage());
 	        }
 	    });
-	    Thread.currentThread().sleep(20000);
+	    Thread.currentThread().sleep(2000);
         server.stop();
 	}
 }

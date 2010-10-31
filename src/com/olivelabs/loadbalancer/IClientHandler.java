@@ -1,12 +1,8 @@
 package com.olivelabs.loadbalancer;
 
+import com.olivelabs.data.INode;
+import com.olivelabs.loadbalancer.implementation.RspHandler;
 
-
-import org.simpleframework.http.Response;
-
-import com.ning.http.client.AsyncHandler;
-
-public interface IClientHandler {
-	public void setServerResponse(Response response);
-	public AsyncHandler getAsyncHandler();
+public interface IClientHandler extends Runnable{
+	public void call( byte[] data, RspHandler handler) throws Exception;
 }

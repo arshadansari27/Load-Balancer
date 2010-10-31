@@ -54,7 +54,8 @@ public class MainClass {
 			balancer.addNode("www.thedyinggod.com","80");
 			
 			
-			IServer server = new HttpServer(9090,200);
+			IServer server = new HttpServer(lbPort,200);
+			
 			IClient client = new HttpClient(balancer);
 			server.setClient(client);
 			server.start();
