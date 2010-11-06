@@ -1,8 +1,8 @@
 package com.olivelabs.loadbalancer.implementation;
 
 
+import com.olivelabs.loadbalancer.IBalancer;
 import com.olivelabs.loadbalancer.IClient;
-import com.olivelabs.loadbalancer.IServerHandler;
 import com.olivelabs.loadbalancer.IServer;
 
 import java.io.IOException;
@@ -27,11 +27,10 @@ public class HttpServer implements IServer {
 	private InetAddress lbHostAddress;
 	private int lbPort;
 	private HttpServerHelper helper;
-	private IServerHandler worker;
 	private ServerSocketChannel lbServerChannel;
 	private Selector selector;
 	private Executor executor;
-
+	private IBalancer balancer;
 	
 	
 
@@ -41,11 +40,18 @@ public class HttpServer implements IServer {
 		
 		this.lbPort = port;
 		executor = Executors.newSingleThreadExecutor();
-		worker = new HttpServerHandler();
-		this.helper = new HttpServerHelper(worker);	
+		this.helper = new HttpServerHelper();	
+		
 	}
 
 	
+	@Override
+	public void setBalancer(IBalancer balancer) {
+		this.balancer  = balancer;
+		if(this.helper != null) this.helper.setBalancer(this.balancer);
+	}
+
+
 	@Override
 	public void start() throws Exception{
 		this.selector = SelectorProvider.provider().openSelector();
@@ -78,11 +84,6 @@ public class HttpServer implements IServer {
 
 
 
-	@Override
-	public void setClient(IClient client) {
-		worker.setClient(client);
-	}
-
 	public void restart() throws Exception{
 		
 		this.stop();
@@ -90,6 +91,7 @@ public class HttpServer implements IServer {
 		this.start();
 		
 	}
+
 
 	
 }

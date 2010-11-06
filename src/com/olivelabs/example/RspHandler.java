@@ -16,6 +16,7 @@ public class RspHandler {
 			} catch (InterruptedException e) {
 			}
 		}
+		System.out.println(this.rsp.toString());
 		return this.rsp;
 		//System.out.println(new String(this.rsp));
 	}

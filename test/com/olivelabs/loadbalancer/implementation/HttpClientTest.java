@@ -4,7 +4,11 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 
-import org.apache.mina.core.session.IoSession;
+import java.net.InetAddress;
+
+import junit.framework.Assert;
+
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -25,21 +29,28 @@ public class HttpClientTest {
 	
 	@Before
 	public void setUp() throws Exception{
-		IBalancer balancer = createMock(IBalancer.class);
-		INode n1 = new com.olivelabs.data.Node("www.finicity.com", "80", new Metric());
-		expect(balancer.getNode()).andReturn(n1);
-		replay(balancer);
-		client = new HttpClient(balancer);
+		client = new HttpClient(InetAddress.getByName("finicity.com"),80);
 		
 	}
 	
 	
 	@Test
 	public void testSendRequest() throws Exception{
+		for(int i =0; i<3; i++){
 		RspHandler handler = new RspHandler();
-		client.send("GET / HTTP/1.1\n\n".getBytes(), handler);
-		System.out.println(handler.waitForResponse());
-		
+		client.send("GET / HTTP/1.0\n\n".getBytes(), handler);
+		byte[] response = handler.waitForResponse();
+		Assert.assertNotNull(response);
+		Assert.assertTrue(response.length>1);
+		for(int index = 0; index < response.length; index++){
+			System.out.print((char)response[index]);
+		}
+		for(int index = 0; index < 10; index++){
+			System.out.print("*");
+		}
+		System.out.println("*");
+		System.out.println(response.length);
+		}
 	}
 	
 	

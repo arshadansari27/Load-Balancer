@@ -236,7 +236,12 @@ public class NioClient implements Runnable {
 			//client.send("GET / HTTP/1.0\r\n\r\n".getBytes(), handler);
 				RspHandler handler = new RspHandler();
 				client.send(str.getBytes(), handler);
-				handler.waitForResponse();
+				byte[] response = handler.waitForResponse();
+				for(int j =  0; j<response.length;j++){
+					StringBuilder builder = new StringBuilder();
+					builder.append((char) response[j]);
+					System.out.println(builder.toString());
+				}
 			}
 			
 			t.join();

@@ -1,5 +1,8 @@
 package com.olivelabs.loadbalancer.implementation;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 import com.olivelabs.data.IMetric;
 import com.olivelabs.data.IMetricCalculator;
 import com.olivelabs.data.INode;
@@ -18,9 +21,10 @@ public class HttpBalancer implements IBalancer {
 	private IRouter router;
 	private String metricType;
 	private IMetricCalculator metricCalculator;
+	private Executor executor;
 	public HttpBalancer() {
 		queue = new NodeQueue();
-		//routingAlgorithm = RoutingAlgorithm.getRoutingAlgorithm(algorithmName);
+		executor = Executors.newCachedThreadPool();
 	}
 
 	public String getAlgorithmName() {
@@ -67,6 +71,7 @@ public class HttpBalancer implements IBalancer {
 		metric.setMetricCalculator(metricCalculator);
 		INode node = new Node(host,port, metric);
 		queue.addNode(node);
+		executor.execute(node);
 		return node;
 		
 	}

@@ -49,15 +49,16 @@ public class MainClass {
 			//balancer.setMetricType(Metric.STRATEGY_REQUEST_SIZE);
 			System.out.println("Metric Strategy : "+metricStrategy);
 			balancer.setMetricType(metricStrategy);
-			balancer.addNode("www.google.com","80");
+			//balancer.addNode("www.google.com","80");
 			balancer.addNode("www.finicity.com","80");
-			balancer.addNode("www.thedyinggod.com","80");
+			//balancer.addNode("www.finicity.com","80");
+			//balancer.addNode("www.finicity.com","80");
+			
 			
 			
 			IServer server = new HttpServer(lbPort,200);
 			
-			IClient client = new HttpClient(balancer);
-			server.setClient(client);
+			server.setBalancer(balancer);
 			server.start();
 			System.out.println("Load balancer is running!");
 			//proxy.start();

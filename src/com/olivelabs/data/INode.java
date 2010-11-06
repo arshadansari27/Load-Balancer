@@ -1,6 +1,6 @@
 package com.olivelabs.data;
 
-public interface INode {
+public interface INode extends Runnable {
 
 	public String getHost();
 	public Long getPort();
@@ -9,4 +9,6 @@ public interface INode {
 	public Integer getId();
 	public void setRequestServedSizeInMB(Double value);
 	void setNumberOfRequestServed(Long value);
+	public void sendRequest(byte[] data,
+			com.olivelabs.loadbalancer.implementation.RspHandler handler) throws Exception;
 }

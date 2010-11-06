@@ -15,32 +15,43 @@ import java.util.List;
 import java.util.Map;
 
 import com.olivelabs.example.ChangeRequest;
-import com.olivelabs.loadbalancer.IServerHandler;
+import com.olivelabs.loadbalancer.IBalancer;
 
-public class HttpServerHelper implements Runnable{
+public class HttpServerHelper implements Runnable {
 
 	private ByteBuffer readBuffer = ByteBuffer.allocate(8192);
-	private IServerHandler worker;
 	private List pendingChanges = new LinkedList();
 	private Map pendingData = new HashMap();
 	private ServerSocketChannel lbServerChannel;
 	private Selector selector;
 	private boolean start;
-	public HttpServerHelper(IServerHandler worker){
+	private IBalancer balancer;
+
+	public HttpServerHelper() {
 		super();
 		start = true;
-		this.worker = worker;
+
 	}
-	
-	public void setChannelAndSelector( ServerSocketChannel lbServerChannel, Selector selector){
+
+	public IBalancer getBalancer() {
+		return balancer;
+	}
+
+	public void setBalancer(IBalancer balancer) {
+		this.balancer = balancer;
+	}
+
+	public void setChannelAndSelector(ServerSocketChannel lbServerChannel,
+			Selector selector) {
 		this.selector = selector;
 		this.lbServerChannel = lbServerChannel;
 	}
-	
-	public void stop(){
+
+	public void stop() {
 		start = false;
 	}
-	public void run(){
+
+	public void run() {
 		while (start) {
 			try {
 				// Process any pending changes
@@ -50,7 +61,8 @@ public class HttpServerHelper implements Runnable{
 						ChangeRequest change = (ChangeRequest) changes.next();
 						switch (change.type) {
 						case ChangeRequest.CHANGEOPS:
-							SelectionKey key = change.socket.keyFor(this.selector);
+							SelectionKey key = change.socket
+									.keyFor(this.selector);
 							key.interestOps(change.ops);
 						}
 					}
@@ -84,10 +96,12 @@ public class HttpServerHelper implements Runnable{
 			}
 		}
 	}
+
 	public void send(SocketChannel socket, byte[] data) {
 		synchronized (this.pendingChanges) {
 			// Indicate we want the interest ops set changed
-			this.pendingChanges.add(new ChangeRequest(socket, ChangeRequest.CHANGEOPS, SelectionKey.OP_WRITE));
+			this.pendingChanges.add(new ChangeRequest(socket,
+					ChangeRequest.CHANGEOPS, SelectionKey.OP_WRITE));
 
 			// And queue the data we want written
 			synchronized (this.pendingData) {
@@ -100,12 +114,16 @@ public class HttpServerHelper implements Runnable{
 			}
 		}
 
-		// Finally, wake up our selecting thread so it can make the required changes
+		// Finally, wake up our selecting thread so it can make the required
+		// changes
 		this.selector.wakeup();
 	}
+
 	private void accept(SelectionKey key) throws IOException {
-		// For an accept to be pending the channel must be a server socket channel.
-		ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
+		// For an accept to be pending the channel must be a server socket
+		// channel.
+		ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key
+				.channel();
 
 		// Accept the connection and make it non-blocking
 		SocketChannel socketChannel = serverSocketChannel.accept();
@@ -144,7 +162,18 @@ public class HttpServerHelper implements Runnable{
 		}
 
 		// Hand the data off to our worker thread
-		this.worker.processData(this, socketChannel, this.readBuffer.array(), numRead);
+		ServerDataEvent dataEvent = new ServerDataEvent(this, socketChannel,
+				this.readBuffer.array());
+
+		RspHandler handler = new RspHandler();
+		if(balancer != null)
+			balancer.getNode().sendRequest(dataEvent.data, handler);
+		else
+			handler.handleResponse(new byte[]{10,11,12,13,14,15,16,17});
+		dataEvent.server.send(dataEvent.socket, handler.waitForResponse());
+
+		//System.out.println(dataEvent.data);
+
 	}
 
 	private void write(SelectionKey key) throws IOException {
@@ -172,6 +201,5 @@ public class HttpServerHelper implements Runnable{
 			}
 		}
 	}
-
 
 }

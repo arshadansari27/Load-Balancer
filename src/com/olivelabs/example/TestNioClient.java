@@ -1,8 +1,6 @@
-package com.olivelabs.loadbalancer.implementation;
+package com.olivelabs.example;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.net.CookieStore;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -17,19 +15,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
-import com.olivelabs.data.INode;
-import com.olivelabs.example.ChangeRequest;
-import com.olivelabs.example.RspHandler;
-import com.olivelabs.loadbalancer.IClientHandler;
-import com.olivelabs.util.ResponseConvertor;
-
-public class HttpClientHandler implements IClientHandler {
-
-	private final static Logger LOGGER = Logger.getAnonymousLogger();
-	private boolean finished;
-	
+public class TestNioClient  implements Runnable {
+	// The host:port combination to connect to
 	private InetAddress hostAddress;
 	private int port;
 
@@ -48,15 +36,33 @@ public class HttpClientHandler implements IClientHandler {
 	// Maps a SocketChannel to a RspHandler
 	private Map rspHandlers = Collections.synchronizedMap(new HashMap());
 	
-	
-	public HttpClientHandler(InetAddress hostAddress, int port) throws IOException {
+	public TestNioClient(InetAddress hostAddress, int port) throws IOException {
 		this.hostAddress = hostAddress;
 		this.port = port;
 		this.selector = this.initSelector();
 	}
-	
-	
-	
+
+	public void send(byte[] data, RspHandler handler) throws IOException {
+		// Start a new connection
+		SocketChannel socket = this.initiateConnection();
+		
+		// Register the response handler
+		this.rspHandlers.put(socket, handler);
+		
+		// And queue the data we want written
+		synchronized (this.pendingData) {
+			List queue = (List) this.pendingData.get(socket);
+			if (queue == null) {
+				queue = new ArrayList();
+				this.pendingData.put(socket, queue);
+			}
+			queue.add(ByteBuffer.wrap(data));
+		}
+
+		// Finally, wake up our selecting thread so it can make the required changes
+		this.selector.wakeup();
+	}
+
 	public void run() {
 		while (true) {
 			try {
@@ -179,24 +185,6 @@ public class HttpClientHandler implements IClientHandler {
 		}
 	}
 
-	private void finishConnection(SelectionKey key) throws IOException {
-		SocketChannel socketChannel = (SocketChannel) key.channel();
-	
-		// Finish the connection. If the connection operation failed
-		// this will raise an IOException.
-		try {
-			socketChannel.finishConnect();
-		} catch (IOException e) {
-			// Cancel the channel's registration with our selector
-			System.out.println(e);
-			key.cancel();
-			return;
-		}
-	
-		// Register an interest in writing on this channel
-		key.interestOps(SelectionKey.OP_WRITE);
-	}
-
 	private SocketChannel initiateConnection() throws IOException {
 		// Create a non-blocking socket channel
 		SocketChannel socketChannel = SocketChannel.open();
@@ -216,33 +204,48 @@ public class HttpClientHandler implements IClientHandler {
 		return socketChannel;
 	}
 
+	private void finishConnection(SelectionKey key) throws IOException {
+		SocketChannel socketChannel = (SocketChannel) key.channel();
+	
+		// Finish the connection. If the connection operation failed
+		// this will raise an IOException.
+		try {
+			socketChannel.finishConnect();
+		} catch (IOException e) {
+			// Cancel the channel's registration with our selector
+			System.out.println(e);
+			key.cancel();
+			return;
+		}
+	
+		// Register an interest in writing on this channel
+		key.interestOps(SelectionKey.OP_WRITE);
+	}
+
 	private Selector initSelector() throws IOException {
 		// Create a new selector
 		return SelectorProvider.provider().openSelector();
 	}
 
-	@Override
-	public void call(byte[] data,
-			com.olivelabs.loadbalancer.implementation.RspHandler handler)
-			throws Exception {
-SocketChannel socket = this.initiateConnection();
-		
-		// Register the response handler
-		this.rspHandlers.put(socket, handler);
-		
-		// And queue the data we want written
-		synchronized (this.pendingData) {
-			List queue = (List) this.pendingData.get(socket);
-			if (queue == null) {
-				queue = new ArrayList();
-				this.pendingData.put(socket, queue);
+	public static void main(String[] args) {
+		try {
+			//NioClient client = new NioClient(InetAddress.getByName("www.google.com"), 80);
+			TestNioClient client = new TestNioClient(InetAddress.getByName("www.google.com"), 80);
+			Thread t = new Thread(client);
+			t.setDaemon(true);
+			t.start();
+			
+			for(int i=0;i<4;i++){
+				String str = "GET / HTTP/1.0\r\n";
+				System.out.println(i+":::"+str);
+				RspHandler handler = new RspHandler();
+				client.send(str.getBytes(), handler);
+				handler.waitForResponse();
+				
 			}
-			queue.add(ByteBuffer.wrap(data));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
-		// Finally, wake up our selecting thread so it can make the required changes
-		this.selector.wakeup();		
 	}
-	
-
 }
