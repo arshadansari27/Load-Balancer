@@ -1,13 +1,18 @@
 package com.olivelabs.data;
 
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.olivelabs.loadbalancer.IClient;
-import com.olivelabs.loadbalancer.implementation.HttpClient;
+import com.olivelabs.loadbalancer.implementation.Client;
 import com.olivelabs.loadbalancer.implementation.RspHandler;
 import com.olivelabs.util.ByteArrayConvertor;
 
@@ -19,17 +24,24 @@ public class Node implements INode {
 	private IMetric metric;
 	private static int count = 0;
 	private IClient client;
-	private HashMap<Object, Object> requestList;
-
-	public Node(String host, String port, Metric metric)
+	private List<Socket> requestList;
+	private List<Socket> socketsQueue;
+	private boolean started;
+	ExecutorService executor;
+	
+	
+	public Node(String host, String port, Metric metric, List<Socket> socketsQueue)
 			throws UnknownHostException {
 		this.id = 1000 + count++;
+		started = true;
 		this.host = host;
 		this.port = Long.parseLong(port);
 		this.metric = metric;
-		this.client = new HttpClient(InetAddress.getByName(host),
+		this.client = new Client(InetAddress.getByName(host),
 				this.port.intValue());
-		requestList = new HashMap<Object, Object>();
+		this.client.setMetrics(metric);
+		requestList = new ArrayList<Socket>();
+		this.socketsQueue =socketsQueue; 
 	}
 
 	public String getHost() {
@@ -68,9 +80,9 @@ public class Node implements INode {
 	}
 
 	@Override
-	public void sendRequest(byte[] data, RspHandler handler) throws Exception {
+	public void handleRequest(Socket socket) throws Exception {
 		synchronized (requestList) {
-			requestList.put(handler, data);
+			requestList.add(socket);
 			requestList.notify();
 		}
 	}
@@ -80,7 +92,7 @@ public class Node implements INode {
 		while (true) {
 
 			synchronized (requestList) {
-				if (requestList.isEmpty()) {
+				if (requestList.isEmpty() || requestList.size()==0) {
 					try {
 
 						requestList.wait();
@@ -90,11 +102,10 @@ public class Node implements INode {
 					}
 				}
 			}
-
-			for (Object handler : requestList.keySet()) {
+			Iterator<Socket> iterator = requestList.iterator();
+			while(iterator.hasNext()) {
 				try {
-					this.client.send((byte[]) requestList.get(handler),
-							(RspHandler) handler);
+					this.client.handleRequest(iterator.next());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -105,4 +116,19 @@ public class Node implements INode {
 		}
 	}
 
+	@Override
+	public boolean start() {
+		executor = Executors.newSingleThreadExecutor();
+		executor.execute(this);
+		return true;
+	}
+
+	@Override
+	public boolean stop() {
+		executor.shutdownNow();
+		return true;
+	}
+
+	
+	
 }

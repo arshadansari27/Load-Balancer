@@ -1,5 +1,8 @@
 package com.olivelabs.loadbalancer;
 
+import java.net.Socket;
+import java.nio.channels.SocketChannel;
+
 import com.olivelabs.data.INode;
 import com.olivelabs.data.Node;
 
@@ -26,6 +29,7 @@ public interface IBalancer {
 	public String getMetricType();
 
 	public void setMetricType(String metricType) throws Exception;
+	void handle(Socket socket);
 
 	
 }

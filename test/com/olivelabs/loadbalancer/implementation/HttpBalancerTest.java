@@ -16,11 +16,11 @@ import com.olivelabs.routing.implementation.RoutingAlgorithmFactory;
 
 public class HttpBalancerTest {
 	
-	HttpBalancer balancer;
+	Balancer balancer;
 	
 	@Before
 	public void setUp() throws Exception{
-		balancer = new HttpBalancer();
+		balancer = new Balancer();
 		balancer.setAlgorithmName(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
 		balancer.setMetricType(MetricCalculatorFactory.STRATEGY_REQUEST);
 		for(int i=0;i<10;i++){

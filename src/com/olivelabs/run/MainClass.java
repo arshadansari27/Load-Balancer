@@ -9,9 +9,8 @@ import java.util.Properties;
 import com.olivelabs.loadbalancer.IBalancer;
 import com.olivelabs.loadbalancer.IClient;
 import com.olivelabs.loadbalancer.IServer;
-import com.olivelabs.loadbalancer.implementation.HttpBalancer;
-import com.olivelabs.loadbalancer.implementation.HttpClient;
-import com.olivelabs.loadbalancer.implementation.HttpServer;
+import com.olivelabs.loadbalancer.implementation.Balancer;
+import com.olivelabs.loadbalancer.implementation.Client;
 
 
 public class MainClass {
@@ -41,7 +40,7 @@ public class MainClass {
 			String routingAlgorithm = (String) props.get("routing.algorithm");
 			String metricStrategy =(String) props.get("metric.strategy");
 			//RequestHandlerChain chain = new RequestHandlerChain();
-			IBalancer balancer = new HttpBalancer();
+			IBalancer balancer = new Balancer();
 			//
 			//balancer.setAlgorithmName(RoutingAlgorithm.ROUND_ROBIN);
 			System.out.println("Routing Algorithm : "+routingAlgorithm);
@@ -56,12 +55,7 @@ public class MainClass {
 			
 			
 			
-			IServer server = new HttpServer(lbPort,200);
 			
-			server.setBalancer(balancer);
-			server.start();
-			System.out.println("Load balancer is running!");
-			//proxy.start();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

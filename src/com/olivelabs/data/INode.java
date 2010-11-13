@@ -1,5 +1,7 @@
 package com.olivelabs.data;
 
+import java.net.Socket;
+
 public interface INode extends Runnable {
 
 	public String getHost();
@@ -9,6 +11,7 @@ public interface INode extends Runnable {
 	public Integer getId();
 	public void setRequestServedSizeInMB(Double value);
 	void setNumberOfRequestServed(Long value);
-	public void sendRequest(byte[] data,
-			com.olivelabs.loadbalancer.implementation.RspHandler handler) throws Exception;
+	public boolean start();
+	public boolean stop();
+	public void handleRequest(Socket socket) throws Exception;
 }

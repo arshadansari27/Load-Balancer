@@ -1,6 +1,10 @@
 package com.olivelabs.loadbalancer.implementation;
 
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.olivelabs.data.IMetric;
@@ -14,16 +18,19 @@ import com.olivelabs.queues.NodeQueue;
 import com.olivelabs.routing.IRouter;
 import com.olivelabs.routing.implementation.RoutingAlgorithmFactory;
 
-public class HttpBalancer implements IBalancer {
+public class Balancer implements IBalancer {
 
 	private NodeQueue queue;
+	private List<Socket> socketsQueue;
+	private NodeQueue haltedQueue;
 	private String algorithmName;
 	private IRouter router;
 	private String metricType;
 	private IMetricCalculator metricCalculator;
 	private Executor executor;
-	public HttpBalancer() {
+	public Balancer() {
 		queue = new NodeQueue();
+		socketsQueue = new ArrayList<Socket>();
 		executor = Executors.newCachedThreadPool();
 	}
 
@@ -69,7 +76,7 @@ public class HttpBalancer implements IBalancer {
 	public INode addNode(String host, String port) throws Exception{
 		Metric metric = new Metric();
 		metric.setMetricCalculator(metricCalculator);
-		INode node = new Node(host,port, metric);
+		INode node = new Node(host,port, metric, socketsQueue);
 		queue.addNode(node);
 		executor.execute(node);
 		return node;
@@ -84,19 +91,65 @@ public class HttpBalancer implements IBalancer {
 	@Override
 	public boolean isNodeUp(INode node) {
 		return queue.hasNode(node);
+	
 	}
 
 	@Override
 	public boolean removeNode(INode node) {
-		return queue.removeNode(node);
+		if(node.stop())
+			return queue.removeNode(node);
+		else
+			return false;
 	}
 
 	@Override
 	public boolean removeNodeById(Long id) {
-		Node node = (Node) queue.getNodeById(id.intValue());
-		return queue.removeNode(node);
+		INode node = (Node) queue.getNodeById(id.intValue());
+		if(node.stop())
+			return queue.removeNode(node);
+		else
+			return false;
 	}
 
 	
+	
+	public boolean upNode(INode node){
+		if(haltedQueue.hasNode(node) && !queue.hasNode(node)){
+			queue.addNode(node);
+			haltedQueue.removeNode(node);
+			node.start();
+			executor.execute(node);
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	public boolean downNode(INode node){
+		if(queue.hasNode(node) && !haltedQueue.hasNode(node)){
+			queue.removeNode(node);
+			haltedQueue.addNode(node);
+			node.stop();
+			return true;
+		}
+		else
+			return false;
+	}
+	
+	public boolean reload(INode node){
+		if(queue.hasNode(node) && !haltedQueue.hasNode(node)){
+			node.stop();
+			node.start();
+			executor.execute(node);
+			return true;
+		}
+		else
+			return false;
+	}
 
+	@Override
+	public void handle(Socket socket) {
+		// TODO Auto-generated method stub
+		
+	}
 }

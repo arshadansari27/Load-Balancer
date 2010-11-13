@@ -2,8 +2,12 @@ package com.olivelabs.loadbalancer;
 
 
 
-import com.olivelabs.loadbalancer.implementation.RspHandler;
+import java.net.Socket;
+
+import com.olivelabs.data.IMetric;
+
 
 public interface IClient{
-		public void send(byte[] data, RspHandler handler) throws Exception;
+		public void handleRequest(Socket next) throws Exception;
+		public void setMetrics(IMetric metric);
 }

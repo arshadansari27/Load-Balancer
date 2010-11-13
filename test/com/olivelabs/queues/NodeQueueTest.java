@@ -2,6 +2,10 @@ package com.olivelabs.queues;
 
 import static org.junit.Assert.*;
 
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,22 +19,24 @@ public class NodeQueueTest {
 
 	NodeQueue nodes;
 	INode node;
+	List<Socket> sockets = new ArrayList<Socket>();
 	@Before
 	public void setUp() throws Exception{
 		nodes = new NodeQueue();
-		nodes.addNode(new Node("","2342",new Metric(new MetricCalculatorByNumberOfRequest())));
-		nodes.addNode(new Node("","2342",new Metric(new MetricCalculatorByNumberOfRequest())));
-		nodes.addNode(new Node("","2342",new Metric(new MetricCalculatorByNumberOfRequest())));
-		nodes.addNode(new Node("","2342",new Metric(new MetricCalculatorByNumberOfRequest())));
-		nodes.addNode(new Node("","2342",new Metric(new MetricCalculatorByNumberOfRequest())));
-		nodes.addNode(new Node("","2342",new Metric(new MetricCalculatorByNumberOfRequest())));
-		node = new Node("Localhost","9090",new Metric(new MetricCalculatorByNumberOfRequest()));
+		
+		nodes.addNode(new Node("","2342",new Metric(new MetricCalculatorByNumberOfRequest()), sockets));
+		nodes.addNode(new Node("","2342",new Metric(new MetricCalculatorByNumberOfRequest()), sockets));
+		nodes.addNode(new Node("","2342",new Metric(new MetricCalculatorByNumberOfRequest()), sockets));
+		nodes.addNode(new Node("","2342",new Metric(new MetricCalculatorByNumberOfRequest()), sockets));
+		nodes.addNode(new Node("","2342",new Metric(new MetricCalculatorByNumberOfRequest()), sockets));
+		nodes.addNode(new Node("","2342",new Metric(new MetricCalculatorByNumberOfRequest()), sockets));
+		node = new Node("Localhost","9090",new Metric(new MetricCalculatorByNumberOfRequest()), sockets);
 		nodes.addNode(node);
 	}
 	
 	@Test
 	public void testAddNode() throws Exception{
-		INode node1 = new Node("WTF","2342",new Metric(new MetricCalculatorByNumberOfRequest()));
+		INode node1 = new Node("localhost","2342",new Metric(new MetricCalculatorByNumberOfRequest()), sockets);
 		Integer id = node1.getId();
 		nodes.addNode(node1);
 		INode node2 = nodes.getNodeById(id);

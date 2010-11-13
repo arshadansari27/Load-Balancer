@@ -1,7 +1,10 @@
 package com.olivelabs.routing.implementation;
 
 
+import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -24,7 +27,7 @@ public abstract class AlgorithmTest {
 	int requestCount = 50000;
 	IMetricCalculator metricCalculator;
 	Metric metric;
-	
+	List<Socket> sockets = new ArrayList<Socket>();
 	@Before
 	public void setUp() throws Exception{
 		metricCalculator= MetricCalculatorFactory.getMetricCalculator(MetricCalculatorFactory.STRATEGY_REQUEST);
@@ -40,7 +43,7 @@ public abstract class AlgorithmTest {
 		
 		nodes = new NodeQueue();
 		for(int i=0;i<nodeSize;i++){
-			node = new Node("Localhost","909"+i,metric);
+			node = new Node("Localhost","909"+i,metric, sockets);
 			nodes.addNode(node);
 		}
 		algorithm = RoutingAlgorithmFactory.getRoutingAlgorithm(routingAlgorithm);
@@ -56,7 +59,7 @@ public abstract class AlgorithmTest {
 		nodes = new NodeQueue();
 		Random r = new Random();
 		for(int i=0;i<nodeSize;i++){
-			node = new Node("Localhost","909"+i,metric);
+			node = new Node("Localhost","909"+i,metric, sockets);
 			metric.setNumberOfRequestServed(Long.valueOf(r.nextInt(1000)));
 			metric.setRequestServedSizeInMB(Double.valueOf(r.nextDouble()*10000));
 			node.setMetric(metric);
@@ -91,7 +94,7 @@ public abstract class AlgorithmTest {
 		nodes = new NodeQueue();
 		Random r = new Random();
 		for(int i=0;i<nodeSize;i++){
-			node = new Node("localhost","909"+i,metric);
+			node = new Node("localhost","909"+i,metric, sockets);
 			metric.setNumberOfRequestServed(Long.valueOf(r.nextInt(1000)));
 			metric.setRequestServedSizeInMB(Double.valueOf(r.nextDouble()*10000));
 			node.setMetric(metric);
