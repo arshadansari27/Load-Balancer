@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 import com.olivelabs.data.IMetric;
 import com.olivelabs.loadbalancer.IClient;
-import com.olivelabs.util.ByteArrayConvertor;
+
 
 public class Client implements IClient {
 

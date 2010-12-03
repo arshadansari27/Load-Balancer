@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 import com.olivelabs.loadbalancer.IClient;
 import com.olivelabs.loadbalancer.implementation.Client;
 import com.olivelabs.loadbalancer.implementation.RspHandler;
-import com.olivelabs.util.ByteArrayConvertor;
+
 
 public class Node implements INode {
 
