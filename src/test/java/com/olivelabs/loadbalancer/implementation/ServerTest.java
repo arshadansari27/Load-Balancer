@@ -20,7 +20,7 @@ public class ServerTest {
 	static Server server;
 	@BeforeClass
 	public static void setUp() throws Exception {
-		server = new Server(8888);
+		server = new Server(9999);
 		server.setBalancer(new BalancerMock());
 		server.startServer();
 	}
@@ -29,10 +29,11 @@ public class ServerTest {
 	public void testSendRequest() throws  InterruptedException{
 		Socket socket;
 		try {
-			socket = new Socket("localhost",8888);
+			socket = new Socket("localhost",9999);
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
 			BufferedInputStream reader = new BufferedInputStream(socket.getInputStream());
-			writer.write("GET / HTTP1.0\n\n");
+			writer.println("GET / HTTP1.0\n\n");
+			
 			writer.flush();
 			byte[] byteBuffer = new byte[1024];
 			int status	 = reader.read(byteBuffer);
@@ -41,7 +42,6 @@ public class ServerTest {
 					System.out.print((char) byteBuffer[i]);
 			
 			}while((status = reader.read(byteBuffer))!=-1);
-			Thread.currentThread().join();
 			socket.close();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block

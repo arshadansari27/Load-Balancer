@@ -34,7 +34,7 @@ public class Server implements IServer, Runnable {
 
 	@Override
 	public void startServer() throws Exception {
-		serverExecutor = Executors.newSingleThreadExecutor();
+		serverExecutor = Executors.newFixedThreadPool(1);
 		serverExecutor.execute(this);
 
 	}

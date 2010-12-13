@@ -80,20 +80,8 @@ public class BalancerMock implements IBalancer{
 
 	@Override
 	public void handle(Socket socket)  {
-		WorkerThread worker = new WorkerThread(socket);
-		Thread thread = new Thread(worker);
-		thread.start();
-	}
-	
-}
-class WorkerThread implements Runnable{
-	Socket socket;
-	public WorkerThread(Socket socket){
-		this.socket = socket;
-	}
-	public void run(){
+		write(socket, read(socket));
 		try {
-			write(socket, read(socket));
 			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -105,11 +93,12 @@ class WorkerThread implements Runnable{
 		try {
 			BufferedInputStream in = new BufferedInputStream(socket.getInputStream());
 			byte[] data = new byte[length];
-			int read = in.read(data);
-			do {
+			int read = 0;
+			while((read = in.read(data)) != -1) {
 				System.out.println("READ DATA: "+read);
 				System.out.println(data.toString());
-			}while((read = in.read(data)) != -1);
+				if(read<length) break;
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -126,6 +115,7 @@ class WorkerThread implements Runnable{
 			for(int index=0; index<finalBytes.length;index++){
 				out.print((char) finalBytes[index]);
 			}
+			out.println("\n");
 			out.flush();
 			System.out.println("Completed Writing....");
 		} catch (IOException e) {
