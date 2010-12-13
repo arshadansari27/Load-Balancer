@@ -80,8 +80,20 @@ public class BalancerMock implements IBalancer{
 
 	@Override
 	public void handle(Socket socket)  {
-		write(socket, read(socket));
+		WorkerThread worker = new WorkerThread(socket);
+		Thread thread = new Thread(worker);
+		thread.start();
+	}
+	
+}
+class WorkerThread implements Runnable{
+	Socket socket;
+	public WorkerThread(Socket socket){
+		this.socket = socket;
+	}
+	public void run(){
 		try {
+			write(socket, read(socket));
 			socket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -89,34 +101,20 @@ public class BalancerMock implements IBalancer{
 		}
 	}
 	public byte[] read(Socket socket){
-		ArrayList buffers = new ArrayList();
 		int length = 8192;
 		try {
 			BufferedInputStream in = new BufferedInputStream(socket.getInputStream());
 			byte[] data = new byte[length];
-			int read = 0;
-			while((read = in.read(data)) != -1){
+			int read = in.read(data);
+			do {
 				System.out.println("READ DATA: "+read);
-				buffers.add(data);
-				if(read < length){
-					break;
-				}
-				
-			}
+				System.out.println(data.toString());
+			}while((read = in.read(data)) != -1);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		int completeLenght = buffers.size()*length;
-		byte[] finalBytes = "HTTP 200 OK\n<html>This is a Test</html>".getBytes();
-		/*int currStart=0;
-		int count=1;
-		for(Object o : buffers){
-			byte[] buff = (byte[]) o;
-			System.arraycopy(buff, 0, finalBytes, currStart, length);
-			currStart = length * count++;
-		}*/
-		
+		byte[] finalBytes = "HTTP/1.0 200 OK\n\n<html>This is a Test</html>".getBytes();
 		System.out.println("Completed Reading....");
 		return finalBytes;
 	}
@@ -126,7 +124,7 @@ public class BalancerMock implements IBalancer{
 		try {
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			for(int index=0; index<finalBytes.length;index++){
-			out.println((char) finalBytes[index]);
+				out.print((char) finalBytes[index]);
 			}
 			out.flush();
 			System.out.println("Completed Writing....");
@@ -134,8 +132,5 @@ public class BalancerMock implements IBalancer{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-			
-			
-		
 	}
 }
