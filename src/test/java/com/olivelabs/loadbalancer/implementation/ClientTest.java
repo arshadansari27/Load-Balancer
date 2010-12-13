@@ -1,6 +1,7 @@
 package com.olivelabs.loadbalancer.implementation;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -24,32 +25,32 @@ public class ClientTest {
 
 	@Before
 	public void setUp() throws Exception {
-		client = new Client(InetAddress.getByName("finicity.com"), 80);
+		client = new Client(InetAddress.getByName("www.finicity.com"), 80);
 		IMetric metric = new Metric(new MetricCalculatorByNumberOfRequest());
 		client.setMetrics(metric);
 		server = new ServerSocket(9999);
-
+		new Thread(new WorkerThread2(server, client)).start();
 	}
 
 	@Test
 	public void testHandleRequest() throws Exception {
-		int length = 8192;
-		for (int i = 0; i < 3; i++) {
+		int length = 1024;
+		for (int i = 0; i < 1; i++) {
 			Socket testSocket = new Socket("localhost", 9999);
-			socket = server.accept();
 			PrintWriter out = new PrintWriter(testSocket.getOutputStream());
 			BufferedInputStream in = new BufferedInputStream(
 					testSocket.getInputStream());
+			
+			
 			out.println("GET / HTTP/1.0\n\n");
 			out.flush();
-			client.handleRequest(socket);
 			byte[] response = new byte[length];
 			int read = 0;
 			ArrayList bytes = new ArrayList();
 			while ((read = in.read(response)) != -1) {
 				bytes.add(response);
-				for (int index = 0; index < response.length; index++) {
-					System.out.print((char) response[index]);
+				for(int i1=0;i1<response.length;i1++){
+					System.out.print((char) response[i1]);
 				}
 				if(read < length){
 					break;
@@ -69,9 +70,7 @@ public class ClientTest {
 			
 			Assert.assertNotNull(finalBytes);
 			//Assert.assertTrue(finalBytes.length >= count*(length-1));
-			for (int index = 0; index < finalBytes.length; index++) {
-				System.out.print((char) finalBytes[index]);
-			}
+			
 			for (int index = 0; index < 10; index++) {
 				System.out.print("*");
 			}
@@ -80,4 +79,25 @@ public class ClientTest {
 		}
 	}
 
+}
+class WorkerThread2 implements Runnable{
+	ServerSocket server;
+	Client client;
+	public WorkerThread2(ServerSocket server, Client client){
+		this.server = server;
+		this.client = client;
+	}
+	public void run(){
+		
+			try {
+				Socket socket = server.accept();
+				
+				client.handleRequest(socket);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+	}
+	
 }

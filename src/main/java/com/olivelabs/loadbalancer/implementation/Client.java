@@ -68,8 +68,7 @@ public class Client implements IClient {
 			byte[] bufferOut = new byte[byteLength];
 			ArrayList buffers = new ArrayList();
 			int read = 0;
-			while((read = in.read(data)) != -1){
-				int status = in.read(bufferOut);
+			while((read = in.read(bufferOut)) != -1){
 				byte[] bufferCopy = new byte[byteLength];
 				System.arraycopy(bufferOut, 0, bufferCopy, 0, byteLength);
 				buffers.add(bufferCopy);
