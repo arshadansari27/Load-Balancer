@@ -98,6 +98,10 @@ public class HttpBalancerTest {
 		Assert.assertTrue(balancer.removeNode(node));
 	}
 
+	@Test
+	public void testHandle(){
+		fail("Not yet implemented!");
+	}
 	@After
 	public void tearDown(){
 		balancer = null;

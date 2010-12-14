@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.olivelabs.routing.implementation.RandomAlgorithmTest
 -------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.38 sec
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.436 sec
