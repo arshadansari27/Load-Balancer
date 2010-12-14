@@ -8,6 +8,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import junit.framework.Assert;
+
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -39,7 +42,7 @@ public class ServerTest {
 			int status	 = reader.read(byteBuffer);
 			do{
 				for(int i=0;i<byteBuffer.length;i++)
-					System.out.print((char) byteBuffer[i]);
+					Assert.assertTrue(Character.isDefined((char) byteBuffer[i] ));
 			
 			}while((status = reader.read(byteBuffer))!=-1);
 			socket.close();
@@ -60,8 +63,9 @@ public class ServerTest {
 		Thread.currentThread().sleep(1000);
 		server.reloadServer();
 	}
+	
 	@AfterClass
-	public static void tearDown() throws Exception {
+	public static void tearDownClass() throws Exception {
 		Thread.currentThread().sleep(1000);
 		server.stopServer();
 	}

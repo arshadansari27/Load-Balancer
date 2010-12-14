@@ -19,7 +19,6 @@ import com.olivelabs.routing.implementation.RoutingAlgorithmFactory;
 public class Balancer implements IBalancer {
 
 	private NodeQueue queue;
-	private List<Socket> socketsQueue;
 	private NodeQueue haltedQueue;
 	private String algorithmName;
 	private IRouter router;
@@ -28,7 +27,6 @@ public class Balancer implements IBalancer {
 	private Executor executor;
 	public Balancer() {
 		queue = new NodeQueue();
-		socketsQueue = new ArrayList<Socket>();
 		executor = Executors.newCachedThreadPool();
 	}
 
@@ -74,7 +72,7 @@ public class Balancer implements IBalancer {
 	public INode addNode(String host, String port) throws Exception{
 		Metric metric = new Metric();
 		metric.setMetricCalculator(metricCalculator);
-		INode node = new Node(host,port, metric, socketsQueue);
+		INode node = new Node(host,port, metric);
 		queue.addNode(node);
 		executor.execute(node);
 		return node;

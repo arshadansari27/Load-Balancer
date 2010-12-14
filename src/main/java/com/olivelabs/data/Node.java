@@ -30,7 +30,7 @@ public class Node implements INode {
 	ExecutorService executor;
 	
 	
-	public Node(String host, String port, Metric metric, List<Socket> socketsQueue)
+	public Node(String host, String port, Metric metric)
 			throws UnknownHostException {
 		this.id = 1000 + count++;
 		started = true;
@@ -41,7 +41,6 @@ public class Node implements INode {
 				this.port.intValue());
 		this.client.setMetrics(metric);
 		requestList = new ArrayList<Socket>();
-		this.socketsQueue =socketsQueue; 
 	}
 
 	public String getHost() {

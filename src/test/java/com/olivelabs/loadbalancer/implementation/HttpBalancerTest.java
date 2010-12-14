@@ -24,7 +24,7 @@ public class HttpBalancerTest {
 		balancer.setAlgorithmName(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
 		balancer.setMetricType(MetricCalculatorFactory.STRATEGY_REQUEST);
 		for(int i=0;i<10;i++){
-			balancer.addNode("localhost","909"+i);
+			balancer.addNode("localhost","1000"+i);
 		}
 	}
 
@@ -36,6 +36,7 @@ public class HttpBalancerTest {
 		balancer.setAlgorithmName(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
 	}
 
+	@Ignore
 	@Test
 	public void testGetNodeDynamically() throws Exception {
 		balancer.setAlgorithmName(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
@@ -45,7 +46,7 @@ public class HttpBalancerTest {
 				break;
 			INode node = balancer.getNode();
 			Assert.assertNotNull(node);
-			System.out.println(node.getId());
+			Assert.assertNotNull(node.getId());
 		}
 		
 		
@@ -60,7 +61,7 @@ public class HttpBalancerTest {
 				break;
 			INode node = balancer.getNode();
 			Assert.assertNotNull(node);
-			System.out.println(node.getId());
+			Assert.assertNotNull(node.getId());
 		}
 		
 		
@@ -74,7 +75,7 @@ public class HttpBalancerTest {
 				break;
 			INode node = balancer.getNode();
 			Assert.assertNotNull(node);
-			System.out.println(node.getId());
+			Assert.assertNotNull(node.getId());
 		}
 		
 		
@@ -82,22 +83,29 @@ public class HttpBalancerTest {
 
 	@Test
 	public void testAddNode() throws Exception {
-		INode node = balancer.addNode("Localhost","9099");
+		INode node = balancer.addNode("Localhost","100099");
 		Assert.assertNotNull(node);
-		System.out.println(node.getId());
+		Assert.assertNotNull(node.getId());
 		
 	}
 	
 	@Test
 	public void testRemoveNode() throws Exception {
-		INode node = balancer.addNode("Localhost","9099");
+		INode node = balancer.addNode("Localhost","100098");
+		node.start();
 		Assert.assertNotNull(node);
-		System.out.println(node.getId());
+		Assert.assertNotNull(node.getId());
 		Assert.assertTrue(balancer.removeNode(node));
 	}
 
 	@After
 	public void tearDown(){
 		balancer = null;
+		try {
+			Thread.currentThread().sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

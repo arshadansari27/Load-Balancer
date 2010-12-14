@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import junit.framework.Assert;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,7 +29,7 @@ public class ClientTest {
 		client = new Client(InetAddress.getByName("www.finicity.com"), 80);
 		IMetric metric = new Metric(new MetricCalculatorByNumberOfRequest());
 		client.setMetrics(metric);
-		server = new ServerSocket(9999);
+		server = new ServerSocket(8989);
 		new Thread(new WorkerThread2(server, client)).start();
 	}
 
@@ -36,7 +37,7 @@ public class ClientTest {
 	public void testHandleRequest() throws Exception {
 		int length = 1024;
 		for (int i = 0; i < 1; i++) {
-			Socket testSocket = new Socket("localhost", 9999);
+			Socket testSocket = new Socket("localhost", 8989);
 			PrintWriter out = new PrintWriter(testSocket.getOutputStream());
 			BufferedInputStream in = new BufferedInputStream(
 					testSocket.getInputStream());
@@ -50,7 +51,7 @@ public class ClientTest {
 			while ((read = in.read(response)) != -1) {
 				bytes.add(response);
 				for(int i1=0;i1<response.length;i1++){
-					System.out.print((char) response[i1]);
+					Assert.assertTrue(Character.isDefined((char) response[i1] ));
 				}
 				if(read < length){
 					break;
@@ -69,16 +70,20 @@ public class ClientTest {
 			
 			
 			Assert.assertNotNull(finalBytes);
-			//Assert.assertTrue(finalBytes.length >= count*(length-1));
+			Assert.assertTrue(finalBytes.length >= 1);
 			
-			for (int index = 0; index < 10; index++) {
-				System.out.print("*");
-			}
-			System.out.println("*");
-			System.out.println(finalBytes.length);
 		}
 	}
 
+	@After
+	public void tearDown(){
+		try {
+			Thread.currentThread().sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
 class WorkerThread2 implements Runnable{
 	ServerSocket server;
