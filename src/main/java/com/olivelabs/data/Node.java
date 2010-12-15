@@ -25,9 +25,7 @@ public class Node implements INode {
 	private static int count = 0;
 	private IClient client;
 	private List<Socket> requestList;
-	private List<Socket> socketsQueue;
 	private boolean started;
-	ExecutorService executor;
 	
 	
 	public Node(String host, String port, Metric metric)
@@ -88,7 +86,7 @@ public class Node implements INode {
 
 	@Override
 	public void run() {
-		while (true) {
+		while (started) {
 
 			synchronized (requestList) {
 				if (requestList.isEmpty() || requestList.size()==0) {
@@ -115,19 +113,16 @@ public class Node implements INode {
 		}
 	}
 
-	@Override
-	public boolean start() {
-		executor = Executors.newSingleThreadExecutor();
-		executor.execute(this);
-		return true;
+	public void start(){
+		started = true;
 	}
 
-	@Override
-	public boolean stop() {
-		executor.shutdownNow();
-		return true;
+	public void stop(){
+		started = false;
 	}
-
 	
+	public boolean isStarted(){
+		return started;
+	}
 	
 }

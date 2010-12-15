@@ -1,6 +1,16 @@
 package com.olivelabs.loadbalancer.implementation;
 
 import static org.junit.Assert.*;
+
+import java.io.BufferedInputStream;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
 import junit.framework.Assert;
 
 import org.junit.After;
@@ -14,7 +24,7 @@ import com.olivelabs.data.Node;
 import com.olivelabs.data.metrics.MetricCalculatorFactory;
 import com.olivelabs.routing.implementation.RoutingAlgorithmFactory;
 
-public class HttpBalancerTest {
+public class BalancerTest {
 	
 	Balancer balancer;
 	
@@ -24,7 +34,7 @@ public class HttpBalancerTest {
 		balancer.setAlgorithmName(RoutingAlgorithmFactory.DYNAMIC_ALGORITHM);
 		balancer.setMetricType(MetricCalculatorFactory.STRATEGY_REQUEST);
 		for(int i=0;i<10;i++){
-			balancer.addNode("localhost","1000"+i);
+			balancer.addNode("localhost","1024"+i);
 		}
 	}
 
@@ -83,7 +93,7 @@ public class HttpBalancerTest {
 
 	@Test
 	public void testAddNode() throws Exception {
-		INode node = balancer.addNode("Localhost","100099");
+		INode node = balancer.addNode("localhost","10480");
 		Assert.assertNotNull(node);
 		Assert.assertNotNull(node.getId());
 		
@@ -91,16 +101,67 @@ public class HttpBalancerTest {
 	
 	@Test
 	public void testRemoveNode() throws Exception {
-		INode node = balancer.addNode("Localhost","100098");
-		node.start();
+		INode node = balancer.addNode("localhost","10481");
 		Assert.assertNotNull(node);
 		Assert.assertNotNull(node.getId());
 		Assert.assertTrue(balancer.removeNode(node));
 	}
 
 	@Test
-	public void testHandle(){
-		fail("Not yet implemented!");
+	public void testHandle() throws Exception{
+		Node _node;
+		String _host;
+		String _port;
+		Metric metric;
+		ServerSocket serverSocket ;
+		_host = "www.google.com";
+		_port = "80";
+		metric = new Metric();
+		_node = new Node(_host,_port, metric);
+		serverSocket = new ServerSocket(10483);
+		Executor executor = Executors.newCachedThreadPool(new ThreadFactory() {
+			
+			@Override
+			public Thread newThread(Runnable r) {
+				Thread t = new Thread(r);
+				return t;
+			}
+		});
+		executor.execute(_node);
+int length = 1024;
+		
+		for(int i=0;i<10;i++){
+			Socket socket = new Socket("localhost",10483);
+			Socket incoming = serverSocket.accept();
+			_node.handleRequest(incoming);
+			PrintWriter out = new PrintWriter(socket.getOutputStream());
+			BufferedInputStream in = new BufferedInputStream(socket.getInputStream());
+			out.println("GET / HTTP/1.0\n\n");
+			out.flush();
+			byte[] response = new byte[length];
+			int read = 0;
+			ArrayList bytes = new ArrayList();
+			while ((read = in.read(response)) != -1) {
+				bytes.add(response);
+				for(int i1=0;i1<response.length;i1++){
+					Assert.assertTrue(Character.isDefined((char) response[i1] ));
+				}
+				if(read < length){
+					break;
+				}
+			}
+			int completeLenght = bytes.size()*length;
+			byte[] finalBytes = new byte[completeLenght]; 
+				int currStart=0;
+			int count=1;
+			for(Object o : bytes){
+				byte[] buff = (byte[]) o;
+				System.arraycopy(buff, 0, finalBytes, currStart, length);
+				currStart = length * count++;
+			}
+			Assert.assertNotNull(finalBytes);
+			Assert.assertTrue(finalBytes.length >= 1);	
+		}
 	}
 	@After
 	public void tearDown(){

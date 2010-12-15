@@ -22,17 +22,14 @@ public class ServerHandler implements Runnable {
 			synchronized (socketList) {
 				if (socketList.size() == 0 || socketList.isEmpty()) {
 					try {
-						System.out.println("Waiting for requests....");
 						socketList.wait();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
-				System.out.println("Not looping....");
 				Iterator<Socket> iterator = socketList.iterator();
 				while (iterator.hasNext()) {
-					System.out.println("There's a request....");
 					handleSocket(iterator.next());
 				}
 				socketList.clear();
@@ -42,10 +39,8 @@ public class ServerHandler implements Runnable {
 
 	public void serve(Socket socket) {
 		synchronized (socketList) {
-			// socketList.notify();
 			socketList.add(socket);
 			socketList.notify();
-			System.out.println("Notify the handler....");
 		}
 	}
 

@@ -25,18 +25,18 @@ public class Server implements IServer, Runnable {
 	int poolSize;
 	int currentHandler;
 
-	public Server(int port) {
+	public Server(int port, int poolSize) {
 		started = true;
 		this.port = port;
-		poolSize = 1;
+		this.poolSize = poolSize;
 		currentHandler = 0;
 	}
 
 	@Override
 	public void startServer() throws Exception {
+		started = true;
 		serverExecutor = Executors.newFixedThreadPool(1);
 		serverExecutor.execute(this);
-
 	}
 
 	@Override
@@ -76,8 +76,13 @@ public class Server implements IServer, Runnable {
 		}
 	}
 
-	private void releaseResources() throws IOException {
-		server.close();
+	private void releaseResources() {
+		try {
+			server.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private ServerHandler getHander() {
@@ -100,16 +105,14 @@ public class Server implements IServer, Runnable {
 		}
 
 		setupResource();
-		while (true) {
+		while (started) {
 			try {
-				System.out.println("Server listening.....");
 				Socket socket = server.accept();
-				System.out.println("Server got request...");
 				getHander().serve(socket);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		// releaseResources();
+		releaseResources();
 	}
 }

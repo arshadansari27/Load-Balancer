@@ -11,7 +11,8 @@ public interface INode extends Runnable {
 	public Integer getId();
 	public void setRequestServedSizeInMB(Double value);
 	void setNumberOfRequestServed(Long value);
-	public boolean start();
-	public boolean stop();
 	public void handleRequest(Socket socket) throws Exception;
+	public boolean isStarted();
+	public void start();
+	public void stop();
 }

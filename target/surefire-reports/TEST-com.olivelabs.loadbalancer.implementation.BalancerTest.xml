@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="0" time="0.002" errors="0" skipped="0" tests="1" name="com.olivelabs.data.metrics.MetricCalculatorByRequestSizeTest">
+<testsuite failures="0" time="9.199" errors="0" skipped="1" tests="7" name="com.olivelabs.loadbalancer.implementation.BalancerTest">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-6-openjdk/jre/lib/i386"/>
@@ -57,5 +57,13 @@
     <property name="sun.desktop" value="gnome"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase time="0.001" classname="com.olivelabs.data.metrics.MetricCalculatorByRequestSizeTest" name="testCalculateMetrics"/>
+  <testcase time="1.019" classname="com.olivelabs.loadbalancer.implementation.BalancerTest" name="testSetAlgorithmName"/>
+  <testcase time="1.02" classname="com.olivelabs.loadbalancer.implementation.BalancerTest" name="testGetNodeDynamically">
+    <skipped/>
+  </testcase>
+  <testcase time="1.037" classname="com.olivelabs.loadbalancer.implementation.BalancerTest" name="testGetNodeRoundRobin"/>
+  <testcase time="1.046" classname="com.olivelabs.loadbalancer.implementation.BalancerTest" name="testGetNodeRandom"/>
+  <testcase time="1.004" classname="com.olivelabs.loadbalancer.implementation.BalancerTest" name="testAddNode"/>
+  <testcase time="1.004" classname="com.olivelabs.loadbalancer.implementation.BalancerTest" name="testRemoveNode"/>
+  <testcase time="4.079" classname="com.olivelabs.loadbalancer.implementation.BalancerTest" name="testHandle"/>
 </testsuite>

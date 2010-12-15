@@ -92,7 +92,8 @@ public class Balancer implements IBalancer {
 
 	@Override
 	public boolean removeNode(INode node) {
-		if(node.stop())
+		node.stop();
+		if(!node.isStarted())
 			return queue.removeNode(node);
 		else
 			return false;
@@ -101,51 +102,25 @@ public class Balancer implements IBalancer {
 	@Override
 	public boolean removeNodeById(Long id) {
 		INode node = (Node) queue.getNodeById(id.intValue());
-		if(node.stop())
+		node.stop();
+		if(!node.isStarted())
 			return queue.removeNode(node);
 		else
 			return false;
 	}
 
-	
-	
-	public boolean upNode(INode node){
-		if(haltedQueue.hasNode(node) && !queue.hasNode(node)){
-			queue.addNode(node);
-			haltedQueue.removeNode(node);
-			node.start();
-			executor.execute(node);
-			return true;
-		}
-		else
-			return false;
-	}
-	
-	public boolean downNode(INode node){
-		if(queue.hasNode(node) && !haltedQueue.hasNode(node)){
-			queue.removeNode(node);
-			haltedQueue.addNode(node);
-			node.stop();
-			return true;
-		}
-		else
-			return false;
-	}
-	
-	public boolean reload(INode node){
-		if(queue.hasNode(node) && !haltedQueue.hasNode(node)){
-			node.stop();
-			node.start();
-			executor.execute(node);
-			return true;
-		}
-		else
-			return false;
-	}
 
 	@Override
 	public void handle(Socket socket) {
-		// TODO Auto-generated method stub
+		try {
+			getNode().handleRequest(socket);
+		} catch (RuntimeException e) {
+			System.out.println("Error while sending request to client from the balancer!");
+			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println("Error while sending request to client from the balancer!");
+			e.printStackTrace();
+		}
 		
 	}
 }

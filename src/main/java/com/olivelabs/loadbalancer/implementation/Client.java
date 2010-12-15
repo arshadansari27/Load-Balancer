@@ -59,7 +59,6 @@ public class Client implements IClient {
 			if(socket == null || socket.isClosed()){
 				socket = new Socket(server, port); 
 				socket.setKeepAlive(true);
-				System.out.println("Connection established....");
 			}
 			OutputStream out = socket.getOutputStream();
 			out.write(data);
@@ -116,7 +115,6 @@ public class Client implements IClient {
 			byte[] data = new byte[length];
 			int read = 0;
 			while((read = in.read(data)) != -1){
-				System.out.println("READ DATA: "+read);
 				buffers.add(data);
 				data = new byte[length];
 				if(read < length){

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="0" time="5.465" errors="0" skipped="0" tests="1" name="com.olivelabs.loadbalancer.implementation.ClientTest">
+<testsuite failures="0" time="4.807" errors="0" skipped="0" tests="1" name="com.olivelabs.loadbalancer.implementation.ClientTest">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-6-openjdk/jre/lib/i386"/>
@@ -19,7 +19,7 @@
     <property name="basedir" value="/home/kenshin/workspace/Load-Balancer"/>
     <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-6-openjdk/jre/lib/endorsed"/>
     <property name="os.arch" value="i386"/>
-    <property name="surefire.real.class.path" value="/tmp/surefirebooter2862396999860449117.jar"/>
+    <property name="surefire.real.class.path" value="/tmp/surefirebooter6674154088971094616.jar"/>
     <property name="java.io.tmpdir" value="/tmp"/>
     <property name="line.separator" value="
 "/>
@@ -57,5 +57,5 @@
     <property name="sun.desktop" value="gnome"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase time="5.464" classname="com.olivelabs.loadbalancer.implementation.ClientTest" name="testHandleRequest"/>
+  <testcase time="4.805" classname="com.olivelabs.loadbalancer.implementation.ClientTest" name="testHandleRequest"/>
 </testsuite>

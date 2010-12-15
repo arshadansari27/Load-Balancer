@@ -12,6 +12,7 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -20,19 +21,17 @@ import com.olivelabs.loadbalancer.implementation.Server;
 
 public class ServerTest {
 
-	static Server server;
-	@BeforeClass
-	public static void setUp() throws Exception {
-		server = new Server(9999);
+	Server server;
+	@Before
+	public void setUp() throws Exception {
+		server = new Server(10400,1);
 		server.setBalancer(new BalancerMock());
 		server.startServer();
 	}
 
 	@Test
-	public void testSendRequest() throws  InterruptedException{
-		Socket socket;
-		try {
-			socket = new Socket("localhost",9999);
+	public void testSendRequest() throws  InterruptedException, UnknownHostException, IOException{
+			Socket socket = new Socket("localhost",10400);
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
 			BufferedInputStream reader = new BufferedInputStream(socket.getInputStream());
 			writer.println("GET / HTTP1.0\n\n");
@@ -43,30 +42,33 @@ public class ServerTest {
 			do{
 				for(int i=0;i<byteBuffer.length;i++)
 					Assert.assertTrue(Character.isDefined((char) byteBuffer[i] ));
-			
 			}while((status = reader.read(byteBuffer))!=-1);
 			socket.close();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
+		
 		
 	}
 	
-	@Ignore
+	
+	
 	@Test
-	public void testRestart() throws Exception {
-		Thread.currentThread().sleep(1000);
+	public void testRestart() throws Exception{
+		try {
+			Thread.currentThread().sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		server.reloadServer();
 	}
 	
-	@AfterClass
-	public static void tearDownClass() throws Exception {
-		Thread.currentThread().sleep(1000);
+	@After
+	public void tearDown() throws Exception {
+		try {
+			Thread.currentThread().sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		server.stopServer();
 	}
 
