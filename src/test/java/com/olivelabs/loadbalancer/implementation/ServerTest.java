@@ -24,17 +24,20 @@ public class ServerTest {
 	Server server;
 	@Before
 	public void setUp() throws Exception {
-		server = new Server(10400,1);
+		server = new Server(9797,1);
 		server.setBalancer(new BalancerMock());
 		server.startServer();
 	}
 
 	@Test
 	public void testSendRequest() throws  InterruptedException, UnknownHostException, IOException{
-			Socket socket = new Socket("localhost",10400);
+		synchronized(this){
+			Thread.currentThread().sleep(3000);
+		}
+			Socket socket = new Socket("localhost",9797);
 			PrintWriter writer = new PrintWriter(socket.getOutputStream());
 			BufferedInputStream reader = new BufferedInputStream(socket.getInputStream());
-			writer.println("GET / HTTP1.0\n\n");
+			writer.println("GET / HTTP1.0\r\n\r\n");
 			
 			writer.flush();
 			byte[] byteBuffer = new byte[1024];
@@ -52,12 +55,6 @@ public class ServerTest {
 	
 	@Test
 	public void testRestart() throws Exception{
-		try {
-			Thread.currentThread().sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		server.reloadServer();
 	}
 	

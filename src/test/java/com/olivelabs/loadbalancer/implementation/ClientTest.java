@@ -7,6 +7,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import junit.framework.Assert;
 
@@ -43,48 +45,44 @@ public class ClientTest {
 					testSocket.getInputStream());
 			
 			
-			out.println("GET / HTTP/1.0\n\n");
+			out.write("GET / HTTP/1.0\r\n\r\n");
 			out.flush();
+			//out.println("");
+			//out.flush();
 			byte[] response = new byte[length];
 			int read = 0;
-			ArrayList bytes = new ArrayList();
-			while ((read = in.read(response)) != -1) {
-				bytes.add(response);
+			Queue<byte[]> bytes = new LinkedList<byte[]>();
+			while ((read = in.read(response)) > 0) {
+				byte[] temp = new byte[response.length];
+				System.arraycopy(response, 0, temp, 0, temp.length);
+				bytes.add(temp);
 				for(int i1=0;i1<response.length;i1++){
 					Assert.assertTrue(Character.isDefined((char) response[i1] ));
+					//System.out.print((char) temp[i1] );
 				}
 				if(read < length){
 					break;
 				}
 			}
+			
 			int completeLenght = bytes.size()*length;
 			byte[] finalBytes = new byte[completeLenght]; 
-				int currStart=0;
+			int currStart=0;
 			int count=1;
-			for(Object o : bytes){
-				byte[] buff = (byte[]) o;
+			while(!bytes.isEmpty()){
+				byte[] buff = bytes.remove();
 				System.arraycopy(buff, 0, finalBytes, currStart, length);
 				currStart = length * count++;
-			}
-			
-			
-			
+				//String responseString = new String(buff);
+				//System.out.println(responseString);
+			}		
 			Assert.assertNotNull(finalBytes);
 			Assert.assertTrue(finalBytes.length >= 1);
 			
 		}
 	}
-
-	@After
-	public void tearDown(){
-		try {
-			Thread.currentThread().sleep(3000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }
+
 class WorkerThread2 implements Runnable{
 	ServerSocket server;
 	Client client;
@@ -93,16 +91,12 @@ class WorkerThread2 implements Runnable{
 		this.client = client;
 	}
 	public void run(){
-		
 			try {
 				Socket socket = server.accept();
-				
 				client.handleRequest(socket);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		
 	}
-	
 }

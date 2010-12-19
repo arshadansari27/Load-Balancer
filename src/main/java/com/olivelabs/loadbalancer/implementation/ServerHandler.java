@@ -40,7 +40,7 @@ public class ServerHandler implements Runnable {
 	public void serve(Socket socket) {
 		synchronized (socketList) {
 			socketList.add(socket);
-			socketList.notify();
+			socketList.notifyAll();
 		}
 	}
 

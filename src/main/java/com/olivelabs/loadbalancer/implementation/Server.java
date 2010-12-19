@@ -9,6 +9,7 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.olivelabs.loadbalancer.IBalancer;
 import com.olivelabs.loadbalancer.IServer;
@@ -21,12 +22,12 @@ public class Server implements IServer, Runnable {
 	ExecutorService serverExecutor;
 	ServerSocket server;
 	int port;
-	boolean started;
+	AtomicBoolean started;
 	int poolSize;
 	int currentHandler;
 
 	public Server(int port, int poolSize) {
-		started = true;
+		started = new AtomicBoolean();
 		this.port = port;
 		this.poolSize = poolSize;
 		currentHandler = 0;
@@ -34,18 +35,14 @@ public class Server implements IServer, Runnable {
 
 	@Override
 	public void startServer() throws Exception {
-		started = true;
+		started.set(true);
 		serverExecutor = Executors.newFixedThreadPool(1);
 		serverExecutor.execute(this);
 	}
 
 	@Override
 	public void stopServer() throws Exception {
-		started = false;
-		handlerExecutor.shutdown();
-		handlerExecutor.shutdownNow();
-		serverExecutor.shutdown();
-		serverExecutor.shutdownNow();
+		started.set(false);
 	}
 
 	@Override
@@ -68,7 +65,7 @@ public class Server implements IServer, Runnable {
 		}
 		try {
 			server = new ServerSocket(this.port);
-			// server.setSoTimeout(20000);
+			//server.setSoTimeout(5000);
 
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -79,6 +76,8 @@ public class Server implements IServer, Runnable {
 	private void releaseResources() {
 		try {
 			server.close();
+			handlerExecutor.shutdownNow();
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -105,7 +104,7 @@ public class Server implements IServer, Runnable {
 		}
 
 		setupResource();
-		while (started) {
+		while (started.get()) {
 			try {
 				Socket socket = server.accept();
 				getHander().serve(socket);

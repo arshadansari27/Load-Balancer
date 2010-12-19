@@ -8,12 +8,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.olivelabs.loadbalancer.IClient;
 import com.olivelabs.loadbalancer.implementation.Client;
-import com.olivelabs.loadbalancer.implementation.RspHandler;
 
 
 public class Node implements INode {
@@ -24,9 +26,8 @@ public class Node implements INode {
 	private IMetric metric;
 	private static int count = 0;
 	private IClient client;
-	private List<Socket> requestList;
+	private BlockingQueue<Socket> requestList;
 	private boolean started;
-	
 	
 	public Node(String host, String port, Metric metric)
 			throws UnknownHostException {
@@ -38,7 +39,8 @@ public class Node implements INode {
 		this.client = new Client(InetAddress.getByName(host),
 				this.port.intValue());
 		this.client.setMetrics(metric);
-		requestList = new ArrayList<Socket>();
+		requestList = new LinkedBlockingQueue<Socket>();
+		
 	}
 
 	public String getHost() {
@@ -80,7 +82,7 @@ public class Node implements INode {
 	public void handleRequest(Socket socket) throws Exception {
 		synchronized (requestList) {
 			requestList.add(socket);
-			requestList.notify();
+			requestList.notifyAll();
 		}
 	}
 
@@ -102,6 +104,7 @@ public class Node implements INode {
 			Iterator<Socket> iterator = requestList.iterator();
 			while(iterator.hasNext()) {
 				try {
+					System.out.println("Node: "+this.getId());
 					this.client.handleRequest(iterator.next());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
