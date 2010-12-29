@@ -104,7 +104,7 @@ public class Node implements INode {
 			Iterator<Socket> iterator = requestList.iterator();
 			while(iterator.hasNext()) {
 				try {
-					System.out.println("Node: "+this.getId());
+//					System.out.println("Node: "+this.getId());
 					this.client.handleRequest(iterator.next());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
