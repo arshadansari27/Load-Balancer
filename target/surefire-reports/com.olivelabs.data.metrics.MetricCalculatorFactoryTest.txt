@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.olivelabs.data.metrics.MetricCalculatorFactoryTest
 -------------------------------------------------------------------------------
+<<<<<<< .merge_file_M1GbTW
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.01 sec
+=======
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 sec
+>>>>>>> .merge_file_cMwhDW

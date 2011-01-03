@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="0" time="0.004" errors="0" skipped="0" tests="2" name="com.olivelabs.routing.implementation.RoutingAlgorithmFactoryTest">
+<testsuite failures="0" time="0.003" errors="0" skipped="0" tests="2" name="com.olivelabs.routing.implementation.RoutingAlgorithmFactoryTest">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-6-openjdk/jre/lib/i386"/>
@@ -19,7 +19,11 @@
     <property name="basedir" value="/home/kenshin/workspace/Load-Balancer"/>
     <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-6-openjdk/jre/lib/endorsed"/>
     <property name="os.arch" value="i386"/>
+<<<<<<< .merge_file_iQnoKR
     <property name="surefire.real.class.path" value="/tmp/surefirebooter7680432734085750207.jar"/>
+=======
+    <property name="surefire.real.class.path" value="/tmp/surefirebooter8611876875239346312.jar"/>
+>>>>>>> .merge_file_q7OxyR
     <property name="java.io.tmpdir" value="/tmp"/>
     <property name="line.separator" value="
 "/>
@@ -57,6 +61,10 @@
     <property name="sun.desktop" value="gnome"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
+<<<<<<< .merge_file_iQnoKR
   <testcase time="0.001" classname="com.olivelabs.routing.implementation.RoutingAlgorithmFactoryTest" name="testGetRoutingAlgorithm"/>
+=======
+  <testcase time="0" classname="com.olivelabs.routing.implementation.RoutingAlgorithmFactoryTest" name="testGetRoutingAlgorithm"/>
+>>>>>>> .merge_file_q7OxyR
   <testcase time="0" classname="com.olivelabs.routing.implementation.RoutingAlgorithmFactoryTest" name="testHasRoutingAlgorithm"/>
 </testsuite>

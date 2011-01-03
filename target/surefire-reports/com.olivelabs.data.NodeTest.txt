@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.olivelabs.data.NodeTest
 -------------------------------------------------------------------------------
+<<<<<<< .merge_file_SyVAxT
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 51.539 sec
+=======
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 51.581 sec
+>>>>>>> .merge_file_GVshTU

@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.olivelabs.loadbalancer.implementation.ServerTest
 -------------------------------------------------------------------------------
+<<<<<<< .merge_file_GyIO51
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 4.014 sec
+=======
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 4.027 sec
+>>>>>>> .merge_file_WPArU1

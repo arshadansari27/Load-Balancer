@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<<<<<<< .merge_file_EVig3F
 <testsuite failures="0" time="0.007" errors="0" skipped="0" tests="1" name="com.olivelabs.data.metrics.MetricCalculatorByNumberOfRequestTest">
+=======
+<testsuite failures="0" time="0.008" errors="0" skipped="0" tests="1" name="com.olivelabs.data.metrics.MetricCalculatorByNumberOfRequestTest">
+>>>>>>> .merge_file_iTQ2IF
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-6-openjdk/jre/lib/i386"/>
@@ -19,7 +23,11 @@
     <property name="basedir" value="/home/kenshin/workspace/Load-Balancer"/>
     <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-6-openjdk/jre/lib/endorsed"/>
     <property name="os.arch" value="i386"/>
+<<<<<<< .merge_file_EVig3F
     <property name="surefire.real.class.path" value="/tmp/surefirebooter7680432734085750207.jar"/>
+=======
+    <property name="surefire.real.class.path" value="/tmp/surefirebooter8611876875239346312.jar"/>
+>>>>>>> .merge_file_iTQ2IF
     <property name="java.io.tmpdir" value="/tmp"/>
     <property name="line.separator" value="
 "/>
