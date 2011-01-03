@@ -44,7 +44,7 @@ public class ServerHandler implements Runnable {
 		}
 	}
 
-	public void handleSocket(Socket socket) {
+	public synchronized void handleSocket(Socket socket) {
 		balancer.handle(socket);
 	}
 

@@ -3,6 +3,7 @@ package com.olivelabs.loadbalancer;
 import java.net.Socket;
 
 import com.olivelabs.data.INode;
+import com.olivelabs.queues.NodeQueue;
 
 public interface IBalancer {
 
@@ -28,6 +29,7 @@ public interface IBalancer {
 
 	public void setMetricType(String metricType) throws Exception;
 	void handle(Socket socket);
-
+	
+	public NodeQueue getNodes();
 	
 }

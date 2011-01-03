@@ -107,6 +107,7 @@ public class BalancerTest {
 		Assert.assertTrue(balancer.removeNode(node));
 	}
 
+	@Ignore
 	@Test
 	public void testHandle() throws Exception{
 		Node _node;
@@ -118,7 +119,7 @@ public class BalancerTest {
 		_port = "80";
 		metric = new Metric();
 		_node = new Node(_host,_port, metric);
-		serverSocket = new ServerSocket(10483);
+		serverSocket = new ServerSocket(10485);
 		Executor executor = Executors.newCachedThreadPool(new ThreadFactory() {
 			
 			@Override
@@ -131,8 +132,9 @@ public class BalancerTest {
 int length = 1024;
 		
 		for(int i=0;i<10;i++){
-			Socket socket = new Socket("localhost",10483);
+			Socket socket = new Socket("localhost",10485);
 			Socket incoming = serverSocket.accept();
+			incoming.setSoTimeout(5000);
 			_node.handleRequest(incoming);
 			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			BufferedInputStream in = new BufferedInputStream(socket.getInputStream());
@@ -140,27 +142,12 @@ int length = 1024;
 			out.flush();
 			byte[] response = new byte[length];
 			int read = 0;
-			ArrayList bytes = new ArrayList();
 			while ((read = in.read(response)) != -1) {
-				bytes.add(response);
-				for(int i1=0;i1<response.length;i1++){
+				for(int i1=0;i1<read;i1++){
 					Assert.assertTrue(Character.isDefined((char) response[i1] ));
 				}
-				if(read < length){
-					break;
-				}
 			}
-			int completeLenght = bytes.size()*length;
-			byte[] finalBytes = new byte[completeLenght]; 
-				int currStart=0;
-			int count=1;
-			for(Object o : bytes){
-				byte[] buff = (byte[]) o;
-				System.arraycopy(buff, 0, finalBytes, currStart, length);
-				currStart = length * count++;
-			}
-			Assert.assertNotNull(finalBytes);
-			Assert.assertTrue(finalBytes.length >= 1);	
+			
 		}
 	}
 	@After

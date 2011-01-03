@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -48,7 +49,6 @@ public class Client implements IClient {
 	private void establishConnection() {
 		try {
 			socket = new Socket(server, port);
-			// socket.setKeepAlive(true);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException(
@@ -77,8 +77,7 @@ public class Client implements IClient {
 			in = new BufferedInputStream(sourceSocket.getInputStream());
 			outs = new BufferedOutputStream(destinationSocket.getOutputStream());
 			if(fromClient) sourceSocket.setSoTimeout(5000);
-			// DataInputStream inData = new
-			// DataInputStream(sourceSocket.getInputStream());
+			else sourceSocket.setSoTimeout(45000);
 			int byteCount = 0;
 			if (sourceSocket.isConnected() && destinationSocket.isConnected()) {
 				byte[] data = new byte[byteLength];
@@ -87,12 +86,15 @@ public class Client implements IClient {
 					while ((read = in.read(data)) != -1) {
 						byteCount += read;
 						outs.write(data, 0, read);
-						// System.out.println(new String(data,0,read));
 						outs.flush();
 					}
-					//outs.flush();
 					metric.setRequestServedSizeInMB(calculateSizeInMB(byteCount));
 					metric.setNumberOfRequestServed(Long.valueOf(1));
+				} catch (SocketTimeoutException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+					
+				
 				} catch (SocketException e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();

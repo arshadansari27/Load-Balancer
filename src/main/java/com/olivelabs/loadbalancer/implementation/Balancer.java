@@ -113,9 +113,9 @@ public class Balancer implements IBalancer {
 	@Override
 	public void handle(Socket socket) {
 		try {
-			synchronized(this){
+			
 				getNode().handleRequest(socket);
-			}
+			
 		} catch (RuntimeException e) {
 			System.out.println("Error while sending request to client from the balancer!");
 			e.printStackTrace();
@@ -124,5 +124,10 @@ public class Balancer implements IBalancer {
 			e.printStackTrace();
 		}
 		
+	}
+
+	@Override
+	public NodeQueue getNodes() {
+		return this.queue;
 	}
 }

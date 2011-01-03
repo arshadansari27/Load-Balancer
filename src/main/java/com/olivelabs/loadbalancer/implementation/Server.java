@@ -69,7 +69,8 @@ public class Server implements IServer, Runnable {
 
 		} catch (Throwable e) {
 			e.printStackTrace();
-			throw new RuntimeException("Server failure: " + e.getMessage());
+			System.out.println("Load balancer cannot be started. Server failed to bind to given host:port configuration! Stopping now....");
+			System.exit(1);
 		}
 	}
 

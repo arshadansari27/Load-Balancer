@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="0" time="1.143" errors="1" skipped="0" tests="1" name="com.olivelabs.loadbalancer.implementation.ClientTest">
+<testsuite failures="0" time="6.233" errors="0" skipped="0" tests="1" name="com.olivelabs.loadbalancer.implementation.ClientTest">
   <properties>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-6-openjdk/jre/lib/i386"/>
@@ -19,7 +19,7 @@
     <property name="basedir" value="/home/kenshin/workspace/Load-Balancer"/>
     <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-6-openjdk/jre/lib/endorsed"/>
     <property name="os.arch" value="i386"/>
-    <property name="surefire.real.class.path" value="/tmp/surefirebooter4379691937698380991.jar"/>
+    <property name="surefire.real.class.path" value="/tmp/surefirebooter7680432734085750207.jar"/>
     <property name="java.io.tmpdir" value="/tmp"/>
     <property name="line.separator" value="
 "/>
@@ -57,95 +57,5 @@
     <property name="sun.desktop" value="gnome"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase time="1.14" classname="com.olivelabs.loadbalancer.implementation.ClientTest" name="testHandleRequest">
-    <error message="424" type="java.lang.ArrayIndexOutOfBoundsException">java.lang.ArrayIndexOutOfBoundsException: 424
-	at com.olivelabs.loadbalancer.implementation.ClientTest.testHandleRequest(ClientTest.java:56)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:616)
-	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:44)
-	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:15)
-	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:41)
-	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:20)
-	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:28)
-	at org.junit.runners.BlockJUnit4ClassRunner.runNotIgnored(BlockJUnit4ClassRunner.java:79)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:71)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:49)
-	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:193)
-	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:52)
-	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:191)
-	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:42)
-	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:184)
-	at org.junit.runners.ParentRunner.run(ParentRunner.java:236)
-	at org.apache.maven.surefire.junit4.JUnit4TestSet.execute(JUnit4TestSet.java:62)
-	at org.apache.maven.surefire.suite.AbstractDirectoryTestSuite.executeTestSet(AbstractDirectoryTestSuite.java:140)
-	at org.apache.maven.surefire.suite.AbstractDirectoryTestSuite.execute(AbstractDirectoryTestSuite.java:127)
-	at org.apache.maven.surefire.Surefire.run(Surefire.java:177)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:616)
-	at org.apache.maven.surefire.booter.SurefireBooter.runSuitesInProcess(SurefireBooter.java:345)
-	at org.apache.maven.surefire.booter.SurefireBooter.main(SurefireBooter.java:1009)
-</error>
-    <system-out>Establishing Connection
-GET / HTTP/1.0
-
-
-HTTP/1.1 200 OK
-Date: Wed, 29 Dec 2010 18:10:14 GMT
-Server: Apache
-Cache-Control: max-age=604800
-Expires: Wed, 05 Jan 2011 18:10:14 GMT
-Content-Length: 17095
-Connection: close
-Content-Type: text/html
-
-
-&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
-&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
-&lt;head&gt;
-&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=iso-8859-1&quot; /&gt;
-&lt;title&gt;Finicity - Mvelopes | Envelope Budgeting | Gain Control of your Money | Eliminate Debt | Achieve Financial Peace&lt;/title&gt;
-&lt;meta name=&quot;keywords&quot; content=&quot;Finicity Corporation, leading software services company, Mvelopes, online spending management system&quot; /&gt;
-&lt;meta name=&quot;description&quot; content=&quot;Finicity is a leading Internet and mobile software services company specializing in the development and delivery of financial productivity applications for personal and business use.&quot; /&gt;
-&lt;meta name=&quot;verify-v1&quot; content=&quot;SoN/n/1faMaYf1l1T5Wlv4K5qV+vBN2oSbqTmacXQV0=&quot; &gt;
-&lt;meta name=&quot;verify-v1&quot; content=&quot;UA0XfFSF3jwENJBLKLJRp/5Aw15b823VFP9/MrrjvQk=&quot; /&gt; 
-&lt;link href=&quot;/css/finicity.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot; /&gt;
-&lt;script language=&quot;JavaScript&quot; src=&quot;/javascript/javascript.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body style=&quot;background-image: url(&apos;/images/swirl-bg.jpg&apos;);&quot;&gt;
-&lt;!-- This is Google Analytics, not Omniture--&gt;
-
-&lt;script type=&quot;text/javascript&quot;&gt;
-var gaJsHost 
-HTTP/1.1 200 OK
-Date: Wed, 29 Dec 2010 18:10:14 GMT
-Server: Apache
-Cache-Control: max-age=604800
-Expires: Wed, 05 Jan 2011 18:10:14 GMT
-Content-Length: 17095
-Connection: close
-Content-Type: text/html
-
-
-&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
-&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
-&lt;head&gt;
-&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=iso-8859-1&quot; /&gt;
-&lt;title&gt;Finicity - Mvelopes | Envelope Budgeting | Gain Control of your Money | Eliminate Debt | Achieve Financial Peace&lt;/title&gt;
-&lt;meta name=&quot;keywords&quot; content=&quot;Finicity Corporation, leading software services company, Mvelopes, online spending management system&quot; /&gt;
-&lt;meta name=&quot;description&quot; content=&quot;Finicity is a leading Internet and mobile software services company specializing in the development and delivery of financial productivity applications for personal and business use.&quot; /&gt;
-&lt;meta name=&quot;verify-v1&quot; content=&quot;SoN/n/1faMaYf1l1T5Wlv4K5qV+vBN2oSbqTmacXQV0=&quot; &gt;
-&lt;meta name=&quot;verify-v1&quot; content=&quot;UA0XfFSF3jwENJBLKLJRp/5Aw15b823VFP9/MrrjvQk=&quot; /&gt; 
-&lt;link href=&quot;/css/finicity.css&quot; rel=&quot;stylesheet&quot; type=&quot;text/css&quot; /&gt;
-&lt;script language=&quot;JavaScript&quot; src=&quot;/javascript/javascript.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body style=&quot;background-image: url(&apos;/images/swirl-bg.jpg&apos;);&quot;&gt;
-&lt;!-- This is Google Analytics, not Omniture--&gt;
-
-&lt;script type=&quot;text/javascript&quot;&gt;
-var gaJsHost </system-out>
-  </testcase>
+  <testcase time="6.231" classname="com.olivelabs.loadbalancer.implementation.ClientTest" name="testHandleRequest"/>
 </testsuite>

@@ -52,7 +52,7 @@ public class ServerTest {
 	}
 	
 	
-	
+	@Ignore
 	@Test
 	public void testRestart() throws Exception{
 		server.reloadServer();

@@ -15,6 +15,7 @@ import java.util.List;
 
 import com.olivelabs.data.INode;
 import com.olivelabs.loadbalancer.IBalancer;
+import com.olivelabs.queues.NodeQueue;
 
 public class BalancerMock implements IBalancer{
 
@@ -122,5 +123,11 @@ public class BalancerMock implements IBalancer{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public NodeQueue getNodes() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -48,16 +49,20 @@ public class ClientTest {
 			out.flush();
 			byte[] response = new byte[length];
 			int read = 0;
+			try{
 			while ((read = in.read(response)) != -1) {
 				byte[] temp = new byte[read];
 				System.arraycopy(response, 0, temp, 0, read);
-				for (int i1 = 0; i1 < response.length; i1++) {
-					Assert.assertTrue(Character.isDefined((char) response[i1]));
+				for (int i1 = 0; i1 < temp.length; i1++) {
+					Assert.assertTrue(Character.isDefined((char) temp[i1]));
 					char c = (char) temp[i1];
 					System.out.print(c);
 				}
 			}
-
+			}
+			catch(SocketTimeoutException ste){
+				
+			}
 		}
 	}
 }
