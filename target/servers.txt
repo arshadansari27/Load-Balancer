@@ -1,3 +1,0 @@
-0=www.finicity.com:80
-1=www.finicity.com:80
-2=www.finicity.com:80
