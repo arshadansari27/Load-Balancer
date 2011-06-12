@@ -70,19 +70,30 @@ public class ClientTest {
 class WorkerThread2 implements Runnable {
 	ServerSocket server;
 	Client client;
+	Socket socket;
 
 	public WorkerThread2(ServerSocket server, Client client) {
 		this.server = server;
 		this.client = client;
 	}
-
+	public WorkerThread2(ServerSocket server) {
+		this.server = server;
+	}
+	
 	public void run() {
 		try {
-			Socket socket = server.accept();
-			client.handleRequest(socket);
+			while(true){
+			this.socket = server.accept();
+			
+			if(client!=null)
+				client.handleRequest(socket);
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public Socket getSocket(){
+		return this.socket;
 	}
 }
