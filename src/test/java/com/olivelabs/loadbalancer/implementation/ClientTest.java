@@ -94,6 +94,8 @@ class WorkerThread2 implements Runnable {
 		}
 	}
 	public Socket getSocket(){
-		return this.socket;
+		Socket socket = this.socket;
+		this.socket = null;
+		return socket;
 	}
 }

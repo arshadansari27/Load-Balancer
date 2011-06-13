@@ -13,42 +13,42 @@ public class NodeQueue {
 	public NodeQueue(){
 		this.nodes = new ArrayList<INode>();
 	}
-	public void addNode(INode node) {
+	public synchronized void addNode(INode node) {
 		this.nodes.add(node);
 	}
-	public boolean removeNode(INode node){
+	public synchronized boolean removeNode(INode node){
 		return this.nodes.remove(node);
 	}
-	public INode getNode(int index){
+	public synchronized INode getNode(int index){
 		return nodes.get(index);
 	}
-	public void addNodes(ArrayList<INode> nodes){
+	public synchronized void addNodes(ArrayList<INode> nodes){
 		this.nodes.addAll(nodes);
 	}
-	public boolean removeNodes(ArrayList<INode> nodes){
+	public synchronized boolean removeNodes(ArrayList<INode> nodes){
 		return this.nodes.removeAll(nodes);
 	}
 	
-	public INode getNodeById(Integer id){
+	public synchronized INode getNodeById(Integer id){
 		for(INode node : nodes){
 			if(node.getId().equals(id)) return node;
 		}
 		return null;
 	}
 	
-	public List<INode> getAll(){
+	public synchronized List<INode> getAll(){
 		return nodes;
 	}
-	public boolean hasNode(INode node){
+	public synchronized boolean hasNode(INode node){
 		return nodes.contains(node);
 	}
-	public boolean isEmpty() {
+	public synchronized boolean isEmpty() {
 		return nodes.isEmpty();
 	}
-	public int getSize() {
+	public synchronized int getSize() {
 		return nodes.size();
 	}
-	public void addNode(INode node, int index) {
+	public synchronized void addNode(INode node, int index) {
 		nodes.add(index, node);
 		
 	}

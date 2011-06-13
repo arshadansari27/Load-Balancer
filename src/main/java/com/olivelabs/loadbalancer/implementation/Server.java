@@ -1,22 +1,24 @@
 package com.olivelabs.loadbalancer.implementation;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.olivelabs.loadbalancer.IBalancer;
+import com.olivelabs.data.Request;
+import com.olivelabs.data.Ri;
 import com.olivelabs.loadbalancer.IServer;
 
+/*
+ * Server class that instantiates the server handler executor threads. 
+ * Exposes methods to start or stop the load balancer. 
+ */
 public class Server implements IServer, Runnable {
 
-	IBalancer balancer;
 	ServerHandler[] handlers;
 	ExecutorService handlerExecutor;
 	ExecutorService serverExecutor;
@@ -25,6 +27,10 @@ public class Server implements IServer, Runnable {
 	AtomicBoolean started;
 	int poolSize;
 	int currentHandler;
+	ConcurrentLinkedQueue<Request> QCHIGH;
+	ConcurrentLinkedQueue<Request> QCMEDIUM;
+	ConcurrentLinkedQueue<Request> QCLOW;
+	ConcurrentHashMap<Long, Ri> requests;
 
 	public Server(int port, int poolSize) {
 		started = new AtomicBoolean();
@@ -32,7 +38,16 @@ public class Server implements IServer, Runnable {
 		this.poolSize = poolSize;
 		currentHandler = 0;
 	}
+	public void setQCj(ConcurrentLinkedQueue<Request> QCHIGH,ConcurrentLinkedQueue<Request> QCMEDIUM,ConcurrentLinkedQueue<Request> QCLOW){
+		this.QCHIGH = QCHIGH;
+		this.QCMEDIUM = QCMEDIUM;
+		this.QCLOW = QCLOW;
+		
+	}
 
+	public void setRequestsTree(ConcurrentHashMap<Long, Ri> requests){
+		this.requests = requests;
+	}
 	@Override
 	public void startServer() throws Exception {
 		started.set(true);
@@ -43,12 +58,6 @@ public class Server implements IServer, Runnable {
 	@Override
 	public void stopServer() throws Exception {
 		started.set(false);
-	}
-
-	@Override
-	public void setBalancer(IBalancer balancer) {
-		this.balancer = balancer;
-
 	}
 
 	@SuppressWarnings("static-access")
@@ -97,10 +106,13 @@ public class Server implements IServer, Runnable {
 	public void run() {
 		handlers = new ServerHandler[this.poolSize];
 		handlerExecutor = Executors.newFixedThreadPool(this.poolSize);
-
+		if(this.QCHIGH==null || this.QCLOW==null || this.QCMEDIUM==null || this.requests==null){
+			throw new RuntimeException("Please set the required classifier queues or the request probability list");
+		}
 		for (int i = 0; i < this.poolSize; i++) {
 			handlers[i] = new ServerHandler();
-			handlers[i].setBalancer(this.balancer);
+			handlers[i].setQCj(QCHIGH, QCMEDIUM, QCLOW);
+			handlers[i].setRequestsTree(requests);
 			handlerExecutor.execute(handlers[i]);
 		}
 

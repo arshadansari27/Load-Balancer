@@ -51,7 +51,7 @@ public class RequestURLExtractorTest {
 		socket = worker.getSocket();
 		Request request = RequestURLExtractor.getURL(socket);
 		System.out.println(request.URL);
-		Thread.currentThread().sleep(30000);
+		Thread.currentThread().sleep(3000);
 		}
 		
 	}

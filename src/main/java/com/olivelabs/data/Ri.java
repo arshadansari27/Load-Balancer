@@ -6,32 +6,28 @@ import java.math.BigInteger;
 public class Ri {
 	
 	public Long hashCode;
-	public BigInteger requestCount;
-	public static BigInteger totalRequestCount;
-	protected Long averageJobServiceTime;
+	public double requestCount = 0;
+	public static Double totalRequestCount = 0d;
+	protected Double averageJobServiceTime = Double.valueOf(1L);
+	public static Double averageServiceTime = Double.valueOf(1D);
 	
-	
-	public BigDecimal getProbability(){
-		return new BigDecimal(requestCount).divide(new BigDecimal(totalRequestCount));
+	public Double getProbability(){
+		return requestCount/totalRequestCount;
 	}
 	
 	public void setAverageJobServiceTime(Long milliSeconds){
-		averageJobServiceTime = totalRequestCount.subtract(BigInteger.ONE)
-									.multiply(new BigInteger(averageJobServiceTime.toString()))
-									.add(new BigInteger(milliSeconds.toString()))
-									.divide(totalRequestCount)
-									.longValue();
+		double totalRequest = totalRequestCount.doubleValue();
+		averageJobServiceTime = (((totalRequest - 1) * averageJobServiceTime) +  ((1.0)*milliSeconds)/1000)/totalRequest;
+		averageServiceTime = (((totalRequest - 1) * averageServiceTime) +  ((1.0)*milliSeconds)/1000)/totalRequest;
 	}
 	
-	public Long getAverageJobServiceTime(){
+	public Double getAverageJobServiceTime(){
 		return averageJobServiceTime;
 	}
 	public Priority getPriority(){
-		Double classifier = getProbability()
-								.divide(new BigDecimal(averageJobServiceTime.intValue()))
-								.doubleValue();
+		Double classifier = getProbability() / (averageJobServiceTime/averageServiceTime);
 		
-		if(classifier < 0.33d){
+		if(classifier > 0.66d){
 			return Priority.HIGH;
 		}
 		else if(classifier > 0.33d && classifier < 0.66d){
