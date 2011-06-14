@@ -1,6 +1,11 @@
 Not yet Alpha
-The Project is currently being used for learning purposes only. It is more of a proof of concept, that touches a lot of later in the development process.
-So, sorry for the things that arent' there yet. 
-Anyways, thanks for the interest.
-Mail me if you'd like to collaborate at arsahdansari27@gmail.com
+The Project is currently being used for learning purposes only. It is more of a proof of concept, that touches a lot of latey in the development process.
+
+The project is now trying to implement the probabilistic request based balancing model and its inspiration is taken from the following mentioned paper. I would like to thank the authors of the paper and express my gratitude.
+
+	A predictive and probabilistic load-balancing algorithm for cluster-based web servers
+		By Saeed Shariﬁan a,∗ , Seyed A. Motamedi a , Mohammad K. Akbari b (http://www.sciencedirect.com/science/article/pii/S1568494610000220)
+
+Currently, I am just beginning to incorporate the principles as explained in the mentioned paper. I would like to implement it in its entirety. 
+If there are any questions, please mail me at arshadansari27@gmail.com. I would be happy to be of any assistance.
    
