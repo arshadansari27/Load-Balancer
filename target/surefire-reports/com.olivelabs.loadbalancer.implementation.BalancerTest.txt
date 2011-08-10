@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.olivelabs.loadbalancer.implementation.BalancerTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 2, Time elapsed: 5.171 sec
