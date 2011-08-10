@@ -3,10 +3,10 @@ package org.olivelabs.loadbalancer;
 
 public class RequestClass {
 	public String URL;
-	private Double requestProbability =  0D;
-	private Double averageServiceTime = Double.MAX_VALUE;
+	public Double requestProbability =  0D;
+	public Double averageServiceTime = Double.MAX_VALUE;
 	public static Long TOTAL_REQUEST_RECEIVED = 0L;
-	private Long SUM_THIS_REQUEST = 0L;
+	public Long SUM_THIS_REQUEST = 0L;
 	
 	
 	public RequestClass(String url){
@@ -20,6 +20,7 @@ public class RequestClass {
 	}
 	
 	public void updateAverageServiceTime(Long newServiceTime){
+		if(SUM_THIS_REQUEST==0L) return;
 		if(averageServiceTime == Double.MAX_VALUE || SUM_THIS_REQUEST == 1L) averageServiceTime = newServiceTime/1.0;
 		else{
 			averageServiceTime = (

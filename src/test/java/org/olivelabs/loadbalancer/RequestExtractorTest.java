@@ -19,6 +19,7 @@ public class RequestExtractorTest {
 	@Before
 	public void setUp() throws Exception {
 		webserverUtil = new WebServerUtil();
+		webserverUtil.setRequestReply(true);
 		webserverUtil.startServer();
 		Thread.currentThread().sleep(3000);
 		socket = new Socket("localhost",9999);
@@ -32,12 +33,13 @@ public class RequestExtractorTest {
 	
 	@Test
 	public void testRequestExtractor(){
-		
-		String request = new RequestExtractor(socket).getRequest();
+		RequestExtractor requestExtractor = new RequestExtractor(socket);
+		String request = requestExtractor.getRequest();
 		Assert.assertNotNull(request);
 		Assert.assertTrue(request.length() > 0);
-		Assert.assertTrue(request.startsWith("HTTP/1.1 200 OK"));
+		Assert.assertTrue(request.startsWith("GET"));
 		System.out.println(request);
+		System.out.println("PATH = "+requestExtractor.getURLPath());
 	}
 	
 	@After

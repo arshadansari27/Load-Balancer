@@ -12,6 +12,7 @@ public class WebServerUtil {
 
 	private ServerSocket serverSocket;
 	private boolean keepRunning = false;
+	private boolean requestReply = false;
 	Thread thread;
 	String httpHeader = "HTTP/1.1 200 OK\n"+
 	"Date: Tue, 09 Aug 2011 20:59:51 GMT\n"+
@@ -22,6 +23,10 @@ public class WebServerUtil {
 	"Content-Length: 899\n"+
 	"Connection: close\n"+
 	"Content-Type: text/html\n\n";
+	
+	public void setRequestReply(boolean reply){
+		this.requestReply = reply;
+	}
 	
 	public WebServerUtil(){
 		try {
@@ -52,9 +57,15 @@ public class WebServerUtil {
 								if(incoming.endsWith("\n\n")) break;
 							}
 							System.out.println("Received request : "+ responseBuilder.toString());
-							
-							outputStream.write(httpHeader.getBytes());
-							outputStream.write(body.getBytes());
+							if(requestReply){
+								outputStream.write("GET /path?abotcs=asdf&asc=42 HTTP/1.0\n".getBytes());
+								outputStream.write("Date: Tue, 09 Aug 2011 20:59:51 GMT\n".getBytes());
+								outputStream.write("Content-Type: text/html\n\n".getBytes());
+							}
+							else{
+								outputStream.write(httpHeader.getBytes());
+								outputStream.write(body.getBytes());
+								}
 							outputStream.flush();
 							
 							
