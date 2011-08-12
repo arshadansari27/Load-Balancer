@@ -34,33 +34,25 @@ public class ServerDispatcher implements Dispatcher {
 			List<byte[]> requestData = new ArrayList<byte[]>();
 			requestData.add(request.REQUEST_TEXT.getBytes());
 			System.out.println(request.REQUEST_TEXT);
-			request.REQUEST_TEXT = request.REQUEST_TEXT.replaceAll("/1.1", "/1.0");
 			System.out.println(request.REQUEST_TEXT);
 			Socket serverConnectionSocket = new Socket(node.hostName,node.port); 
 			SocketOutputWriter serverOutputWriter = new SocketOutputWriter(serverConnectionSocket, requestData);
 			SocketInputReader serverInputReader = new SocketInputReader(serverConnectionSocket, false);
 			serverOutputWriter.execute();
-			serverInputReader.setVersion1(request.REQUEST_TEXT.indexOf("HTTP/1.1")>0 || request.REQUEST_TEXT.indexOf("HTTP1.1")>0);
 			serverInputReader.execute();
 			serverConnectionSocket.close();
 			List<byte[]> responseData = serverInputReader.getData();
 			
-			for(byte[] dataToSend : responseData){
-				System.out.println("***********************");
-				System.out.println("Response is : ");
-				System.out.println("***********************");
-				System.out.println(new String(dataToSend));
-				System.out.println("***********************");
-			}
+			System.out.println("Server Response [Size = "+serverInputReader.getSize()+"]");
 			
 			SocketOutputWriter clientOutputReader = new SocketOutputWriter(request.SOCKET, responseData);
 			clientOutputReader.execute();
-			//request.SOCKET.close();
 			node.updateNodeWithNewRequest();
 			nodes.offer(node);
 			
 			executionTime = System.currentTimeMillis() - executionTime;
 			requestClass.get(request.URL.hashCode()).updateAverageServiceTime(executionTime);
+			request.SOCKET.close();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -15,16 +15,12 @@ public class SocketInputReader {
 	private String requestData;
 	private double sizeInKBs;
 	private boolean listening = false;
-	private boolean version1 = false;
 	
 	public SocketInputReader(Socket socket, boolean listening ) {
 		this.socket = socket;
 		this.listening = listening;
 	}
 	
-	public void setVersion1(boolean version){
-		this.version1 = version;
-	}
 	
 	private boolean isExecuted = false;
 
@@ -50,12 +46,10 @@ public class SocketInputReader {
 				data.add(actualRead);
 				String actualReadStr = new String(actualRead);
 				strBuilder.append(actualReadStr);
-				//System.out.println("READING :"+actualReadStr);
 				if(listening && (actualReadStr).endsWith("\r\n\r\n")) break;
 				if( (actualReadStr).endsWith("0\r\n\r\n")) break;
 			}
 			requestData = strBuilder.toString();
-			System.out.println("Read from input stream:\n "+ requestData);
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
