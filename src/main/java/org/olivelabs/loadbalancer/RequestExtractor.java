@@ -9,6 +9,7 @@ public class RequestExtractor{
 	private String requestText;
 	private SocketInputReader inputReader;
 	private String urlPath;
+	private boolean executed = false;
 	
 	public RequestExtractor(Socket socket) {
 		this.socket = socket;
@@ -16,20 +17,12 @@ public class RequestExtractor{
 	}
 
 	public String getRequest() {
-		inputReader.execute();
-		List<byte[]> data = inputReader.getData();
-		StringBuilder stringBuilder = new StringBuilder();
-		for(byte[] readData : data){
-			stringBuilder.append(new String(readData));
-		}
-		requestText = stringBuilder.toString();
+		 executed = inputReader.execute();
+		requestText = inputReader.getRequestText();
 		return requestText;
 	}
 	
 	public String getURLPath(){
-		//TODO : Can be refactored
-		if(requestText == null || requestText.isEmpty())
-			throw new RuntimeException("Please run the getRequest before getting URL Path!");
 		StringTokenizer tokens = new StringTokenizer(requestText, " ");
 		while(tokens.hasMoreElements()){
 			String element = tokens.nextToken();

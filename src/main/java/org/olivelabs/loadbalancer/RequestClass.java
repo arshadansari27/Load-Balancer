@@ -4,7 +4,7 @@ package org.olivelabs.loadbalancer;
 public class RequestClass {
 	public String URL;
 	public Double requestProbability =  0D;
-	public Double averageServiceTime = Double.MAX_VALUE;
+	public Double averageServiceTime = Integer.MAX_VALUE*1.0;
 	public static Long TOTAL_REQUEST_RECEIVED = 0L;
 	public Long SUM_THIS_REQUEST = 0L;
 	

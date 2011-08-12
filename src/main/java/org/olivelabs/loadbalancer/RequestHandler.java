@@ -25,6 +25,7 @@ public class RequestHandler implements Runnable {
 		String urlPath = extractor .getURLPath();
 		Double classLevel = getURLClassLevel(urlPath);
 		this.request = new Request(this.socket, classLevel, urlPath, requestText);
+		System.out.println("*******Send the request to the queue....");
 		this.queue.offer(request);
 	}
 
